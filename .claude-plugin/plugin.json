@@ -1,0 +1,11 @@
+{
+  "name": "dont-waste-my-time",
+  "displayName": "Don't Waste My Time",
+  "version": "1.0.0",
+  "description": "Executive-grade communication: research, reasoning, storytelling, data visualization, dashboards, presentations, reports, memos and Portuguese/English business translation for senior decision-makers, with a briefing protocol, an anti-fluff filter and an evidence-checked quality gate.",
+  "author": { "name": "bnthrxrp" },
+  "homepage": "https://github.com/bnthrxrp/dont-waste-my-time",
+  "repository": "https://github.com/bnthrxrp/dont-waste-my-time",
+  "license": "MIT",
+  "keywords": ["executive", "presentations", "dashboards", "data-visualization", "reports", "storytelling", "translation", "business-writing"]
+}

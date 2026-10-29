@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: briefing-use-defaults
+expected_outcome: |
+  Turn 1 is a compact briefing. Turn 2 proceeds immediately with the default configuration (directors, balanced, executive standard; objective inferred), stated in one line, and builds the deck.
+context:
+  scaffold_script: place-files.sh

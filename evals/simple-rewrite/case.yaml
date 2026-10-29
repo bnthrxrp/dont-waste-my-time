@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: simple-rewrite
+expected_outcome: |
+  A short rewrite (about 60 words or fewer) that keeps every fact, puts the ask up front, with no questions, research, delegation or long commentary.

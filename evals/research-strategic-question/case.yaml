@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: research-strategic-question
+expected_outcome: |
+  A ~2-page memo that opens with a recommendation (possibly conditional), compares build vs partner (and hybrid) on explicit criteria, cites real verifiable sources for market facts, separates facts from interpretation and assumptions, and lists the company-specific unknowns instead of inventing them.

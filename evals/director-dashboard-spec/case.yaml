@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: director-dashboard-spec
+expected_outcome: |
+  A buildable specification that starts from the director's decisions and questions, defines a short list of headline KPIs with formulas, sources, latency, targets and polarity, handles the weekly-vs-monthly latency mismatch and data-quality caveats, defines layout hierarchy, chart choices, RAG logic, interactions and states, and does not invent targets.
+context:
+  scaffold_script: place-files.sh

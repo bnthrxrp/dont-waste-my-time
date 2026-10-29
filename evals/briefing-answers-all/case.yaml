@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: briefing-answers-all
+expected_outcome: |
+  Turn 1 is a compact briefing (single message, predefined options, defaults shown, nothing already known re-asked). Turn 2 confirms the configuration in one line and builds a <=10-slide English .pptx for the C-suite with a financial emphasis that asks for approval, using only numbers from the workbook or labeled estimates.
+context:
+  scaffold_script: place-files.sh

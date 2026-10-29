@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: board-deck-no-data
+expected_outcome: |
+  Turn 1 is a compact briefing that does not re-ask audience (board) or deliverable (presentation) and infers the objective (approval) or asks it once. Turn 2 builds a <=10-slide decision deck with the ask up front, risks and alternatives, and clearly marked placeholders instead of invented business-case numbers.

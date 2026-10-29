@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: dense-report-to-narrative
+expected_outcome: |
+  A short answer-first narrative that surfaces the buried story: growth is price-driven with volume falling, sell-in is running ahead of sell-out so trade inventory is above the agreed range and the full-year forecast is exposed to destocking, promotions are losing money, and it ends with specific actions.
+context:
+  scaffold_script: place-files.sh

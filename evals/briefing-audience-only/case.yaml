@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: briefing-audience-only
+expected_outcome: |
+  Turn 1 is a compact briefing. Turn 2 accepts the partial answer, fills the rest with defaults stated in one line, does not re-ask, and builds a director-level deck from the workbook without invented numbers.
+context:
+  scaffold_script: place-files.sh

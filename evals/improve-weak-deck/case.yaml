@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: improve-weak-deck
+expected_outcome: |
+  A rebuilt .pptx that leads with the decision (exit the loss-making Brandt contract before the Dec 31 notice deadline; fix raw-material price pass-through), uses action titles, replaces the 3D pie, removes filler slides and vague next steps, states the key numbers correctly, plus a short change summary.
+context:
+  scaffold_script: place-files.sh

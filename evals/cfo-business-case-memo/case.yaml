@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: cfo-business-case-memo
+expected_outcome: |
+  No questions about audience or objective (both given). Either one targeted question about the missing numbers or a memo with clearly marked placeholders; the memo leads with the decision, shows cost, benefit and payback logic, risks, alternatives and success metrics, and invents no figures.

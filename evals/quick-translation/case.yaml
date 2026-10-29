@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: quick-translation
+expected_outcome: |
+  An immediate, accurate translation with numbers converted correctly and business terms translated by meaning; no questionnaire, no delegation, at most one short note.

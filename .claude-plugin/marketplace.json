@@ -1,0 +1,14 @@
+{
+  "name": "dont-waste-my-time",
+  "description": "Executive-grade communication skill for Claude Code: decks, dashboards, reports, memos, research and PT/EN business translation.",
+  "owner": { "name": "bnthrxrp" },
+  "plugins": [
+    {
+      "name": "dont-waste-my-time",
+      "source": "./",
+      "description": "Executive-grade communication skill: briefing protocol, anti-fluff filter, evidence standards and a quality gate for decks, dashboards, reports, memos, research and PT/EN translation.",
+      "category": "productivity",
+      "tags": ["executive", "presentations", "dashboards", "reports", "translation"]
+    }
+  ]
+}

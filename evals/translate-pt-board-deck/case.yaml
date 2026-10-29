@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: translate-pt-board-deck
+expected_outcome: |
+  An English .pptx with the same 6 slides, every number preserved and reformatted to English conventions, Brazilian commercial jargon translated by meaning, the September-estimate caveat kept, speaker notes translated, and the headline/table budget-variance discrepancy flagged rather than silently changed.
+context:
+  scaffold_script: place-files.sh

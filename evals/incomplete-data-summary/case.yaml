@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: incomplete-data-summary
+expected_outcome: |
+  A director-ready October summary that leads with what needs attention, computes variances correctly for complete data, and explicitly flags every gap (East October sales missing, North target and September row missing, West has no prior year, South 143% margin is invalid) without imputing values or hiding gaps inside totals.
+context:
+  scaffold_script: place-files.sh
