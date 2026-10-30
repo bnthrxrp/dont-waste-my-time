@@ -87,7 +87,8 @@ MAX_LOOSE_LISTED = 25        # loosely traced numbers listed in the text report 
 LOCATION_OVERLAP_MIN = 0.5   # per-location counts are only meaningful if half the locations line up
 YEAR_RANGE = (1900, 2100)    # four-digit integers (and years inside dates) in this range are plausible years
 BPS_PER_PP = 100             # 1 percentage point = 100 basis points
-SCALE_SHIFTS = (3, 6, 9)     # trace: a table in "$M" vs prose in "$" differs by 10^3, 10^6 or 10^9
+LOOSE_SCALE_SHIFTS = (0, 3, -3, 6, -6)   # trace: a bare table cell ("412.6", header says $M) vs prose "$412.6M"
+SMALL_INTEGER_LIMIT = 10     # integers below this match exactly or not at all: too many coincidences otherwise
 
 # Hyphen-minus is the only sign we model; fold the look-alikes (length-preserving so offsets hold).
 _CHAR_FOLD = str.maketrans({
@@ -188,6 +189,22 @@ _UNIT_SUFFIX_RE = re.compile(
 _GLUED_UNIT_RE = re.compile(r"(?i:kg|kt|km|cm|mm|ml|mg|gb|mb|tb|hrs?|min|wks?|[gltshdwm])(?![^\W\d_])")
 _ORDINAL_SUFFIX_RE = re.compile(r"(?:[ºª°]|(?i:st|nd|rd|th)(?![^\W\d_]))")
 
+# Placeholders. "[TBD: owner, 2026]" is ignored entirely; a bare bracketed value like "[45]", "[$12M]" or
+# "[$X M]" is a placeholder that carries a number and is reported separately by trace.
+_PLACEHOLDER_RE = re.compile(r"\[\s*(?:TBD|TBC|TODO|PLACEHOLDER|A\s+DEFINIR|A\s+CONFIRMAR)\b[^\]]*\]", re.I)
+_BR_CUR = r"(?:R\$|US\$|[$€£]|BRL|USD|EUR|GBP)"
+_BR_SCALE = r"(?:MM|M|B|k|K|mi|bi|mil|million|billion|milh[õo]es|milh[ãa]o|bilh[õo]es|bilh[ãa]o)"
+_BR_UNIT = r"(?:%|pts?|pp|p\.p\.|pontos|bps|x)"
+_BRACKETED_VALUE_RE = re.compile(
+    rf"\[\s*(?:[+\-]?\s*(?:{_BR_CUR}\s*)?\d[\d.,]*\s*(?:{_BR_SCALE}\b|{_BR_UNIT})?"
+    rf"|{_BR_CUR}\s*X{{1,3}}\s*(?:{_BR_SCALE}\b|{_BR_UNIT})?"
+    rf"|X{{1,3}}\s*(?:{_BR_SCALE}\b|{_BR_UNIT}))\s*\](?!\()"
+)
+# The word right after a number ("6 weeks", "41,300 tonnes") is its unit. Only a word separated by plain
+# spaces counts (not across punctuation), and connectors are skipped ("12 of ...", "3 in Q3" has none).
+_CONNECTORS = r"(?:of|de|do|da|dos|das|in|em|to|a|the|and|e|vs|by|at|for|com|with|on)"
+_UNIT_WORD_RE = re.compile(rf"[ \t]+(?:{_CONNECTORS}[ \t]+)?(?!{_CONNECTORS}\b)([^\W\d_]{{2,}})", re.I)
+
 _TIME_RE = re.compile(r"(?<![\w:.])([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?(?![\w:])")
 _FY_RE = re.compile(r"(?<![\w])FY\s?['’]?(\d{4}|\d{2})(?![\w])", re.I)
 
@@ -251,6 +268,9 @@ class Token:
     unit_index: int = 0
     scope: str = ""                 # row/paragraph key used to find a possible basis for derived numbers
     start: int = 0
+    scale: int = 1                  # multiplier written with the number (10^6 for "mi"/"M")
+    shown: Decimal = Decimal(0)     # the number as written, before scale/sign (48.7 for "R$ 48,7 mi")
+    unit_word: str = ""             # word that follows ("weeks", "tonnes"): the number has an explicit unit
 
     @property
     def is_numeric(self) -> bool:
@@ -443,14 +463,26 @@ def _find_dates(text: str, locale: str, free: Callable[[int, int], bool]) -> lis
     return found
 
 
+def find_bracketed_values(text: str) -> list[tuple[int, int]]:
+    """Spans of bare bracketed values such as "[45]", "[+11%]", "[$X M]" (placeholders that carry a number)."""
+    return [(m.start(), m.end()) for m in _BRACKETED_VALUE_RE.finditer(text.translate(_CHAR_FOLD))]
+
+
 def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = None,
-             location: str = "", unit_index: int = 0) -> list[Token]:
-    """Extract normalised numeric tokens from one text unit."""
+             location: str = "", unit_index: int = 0, claim_bracketed: bool = False) -> list[Token]:
+    """Extract normalised numeric tokens from one text unit.
+
+    "[TBD: ...]" placeholders are always skipped. With claim_bracketed, bare bracketed values
+    ("[45]") are skipped too, so the caller can report them as placeholders instead.
+    """
     text = text.translate(_CHAR_FOLD)
     blocked: list[tuple[int, int]] = []
     for pattern in (_URL_RE, _EMAIL_RE, _REFERENCE_RE):
         blocked += [(m.start(), m.end()) for m in pattern.finditer(text)]
     blocked += [(m.start("num"), m.end("num")) for m in _LIST_NUMBER_RE.finditer(text)]
+    blocked += [(m.start(), m.end()) for m in _PLACEHOLDER_RE.finditer(text)]
+    if claim_bracketed:
+        blocked += [(m.start(), m.end()) for m in _BRACKETED_VALUE_RE.finditer(text)]
     claimed: list[tuple[int, int]] = list(blocked)
     tokens: list[Token] = []
 
@@ -463,10 +495,12 @@ def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = Non
         return ("…" if lo > 0 else "") + body + ("…" if hi < len(text) else "")
 
     def emit(kind: str, value, start: int, end: int, step: Decimal = Decimal(0), unit: str = "",
-             currency: str = "", style: str | None = None) -> None:
+             currency: str = "", style: str | None = None, scale: int = 1, shown: Decimal = Decimal(0)) -> None:
         claimed.append((start, end))
+        word = _UNIT_WORD_RE.match(text, end) if kind == "number" else None
         tokens.append(Token(kind, value, step, unit, currency, text[start:end].strip(), location,
-                            snippet(start, end), style, unit_index, start=start))
+                            snippet(start, end), style, unit_index, start=start, scale=scale, shown=shown,
+                            unit_word=word.group(1).lower() if word else ""))
 
     # 1. quarters (before dates and numbers so "3T25" and "Q3 2025" are not split)
     for pattern, build in _QUARTER_PATTERNS:
@@ -497,7 +531,8 @@ def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = Non
         if parsed is None:  # malformed grouping, e.g. "1,2,3": fall back to the individual digit runs
             for piece in re.finditer(r"\d+", m.group(0)):
                 if free(start + piece.start(), start + piece.end()):
-                    emit("number", Decimal(piece.group(0)), start + piece.start(), start + piece.end(), Decimal(1))
+                    emit("number", Decimal(piece.group(0)), start + piece.start(), start + piece.end(), Decimal(1),
+                         shown=Decimal(piece.group(0)))
             continue
 
         window_start = max(0, start - 8)
@@ -559,7 +594,8 @@ def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = Non
         value = parsed.value * scale_mult * step_factor
         if sign == "-":
             value = -value
-        emit("number", value, prefix_start, max(suffix_end, end), step, unit, currency, parsed.style)
+        emit("number", value, prefix_start, max(suffix_end, end), step, unit, currency, parsed.style,
+             scale_mult, parsed.value)
 
     tokens.sort(key=lambda t: t.start)
     return tokens
@@ -594,6 +630,7 @@ class Doc:
     tokens: list[Token]
     units: list[dict]
     warnings: list[str] = field(default_factory=list)
+    bracketed: list[dict] = field(default_factory=list)   # bare bracketed values set aside (trace only)
 
 
 def detect_number_locale(units: list[dict], language: str) -> tuple[str, dict]:
@@ -614,30 +651,36 @@ def detect_number_locale(units: list[dict], language: str) -> tuple[str, dict]:
     return language, evidence
 
 
-def load_doc(path: Path, locale_override: str | None = None) -> Doc:
+def load_doc(path: Path, locale_override: str | None = None, placeholders_aside: bool = False) -> Doc:
+    """Read a file into normalised number tokens.
+
+    placeholders_aside: do not tokenise bare bracketed values ("[45]", "[$X M]"); list them in Doc.bracketed.
+    """
     units, warnings = doc_text.extract_with_warnings(path)
     language = doc_text.detect_language(" ".join(u["text"] for u in units if not u.get("machine_spans")))
     locale, evidence = detect_number_locale(units, language)
     if locale_override:
         locale = locale_override
     tokens: list[Token] = []
+    bracketed: list[dict] = []
     for index, unit in enumerate(units):
         if unit.get("formula"):
             continue
         lines = unit["text"].split("\n")
-        if len(lines) == 1 or unit.get("machine_spans"):
-            found = tokenize(unit["text"], locale, unit.get("machine_spans"), unit["location"], index)
-            for token in found:
-                token.scope = _scope_for(unit, index, 0)
-            tokens += found
-            continue
-        # Multi-line units (bullets): tokenise per line so scopes and list numbering are per bullet.
-        for line_no, line in enumerate(lines):
-            found = tokenize(line, locale, None, unit["location"], index)
+        machine = unit.get("machine_spans")
+        # Multi-line units (bullets) are tokenised per line so scopes and list numbering are per bullet.
+        for line_no, line in enumerate(lines if not machine else [unit["text"]]):
+            found = tokenize(line, locale, machine, unit["location"], index, claim_bracketed=placeholders_aside)
             for token in found:
                 token.scope = _scope_for(unit, index, line_no)
             tokens += found
-    return Doc(path, language, locale, evidence, tokens, units, warnings)
+            if placeholders_aside and not machine:
+                for start, end in find_bracketed_values(line):
+                    lo, hi = max(0, start - SNIPPET_RADIUS), min(len(line), end + SNIPPET_RADIUS)
+                    bracketed.append({"location": unit["location"], "raw": line[start:end],
+                                      "snippet": ("…" if lo else "") + re.sub(r"\s+", " ", line[lo:hi]).strip()
+                                                 + ("…" if hi < len(line) else "")})
+    return Doc(path, language, locale, evidence, tokens, units, warnings, bracketed)
 
 
 # ---------------------------------------------------------------------------
@@ -937,31 +980,51 @@ def _is_year_like(token: Token) -> bool:
     return False
 
 
+def _is_small_integer(token: Token) -> bool:
+    """A whole number below 10 as written ("6", "$6M"): too common to trace by value, so exact matches only."""
+    return token.is_numeric and token.shown == token.shown.to_integral_value() and abs(token.shown) < SMALL_INTEGER_LIMIT
+
+
+def _is_bare(token: Token) -> bool:
+    """A number with no unit, currency, scale or following unit word of its own: a table cell like "412.6"."""
+    return token.kind == "number" and not (token.unit or token.currency or token.unit_word) and token.scale == 1
+
+
 class _SourceSet:
-    """All numbers found in the sources, queryable with the same tolerance rules (not consumed on use)."""
+    """All numbers found in the sources, queryable without consuming them.
+
+    A deliverable number is traced when it matches a source number with the same kind, unit and currency
+    (within the rounding of the less precise one; single-digit integers must match exactly). If not, it may
+    match LOOSELY by relaxing exactly one thing, never two, and never with rounding:
+      * scale/label: the source is a bare number with no unit of its own (a table cell whose header carries
+        the unit) and the deliverable is a plain or currency number whose digits are identical after a
+        10^3 or 10^6 shift ("$412.6M" ~ "412.6");
+      * sign: same unit and identical digits, opposite sign ("12.1%" ~ "-12.1%").
+    Numbers never match across different explicit units (currency vs %, % vs p.p., 6 vs "6 weeks").
+    Whole numbers below 10 are never matched loosely.
+    """
 
     def __init__(self, tokens: list[Token]) -> None:
-        self.tokens = tokens
         self.strict = _Index(tokens, _key_strict)
-        self.relaxed = _Index([t for t in tokens if t.is_numeric], _key_no_unit, use_abs=True)
-        self.numeric = [t for t in tokens if t.is_numeric]
+        self.signed = _Index([t for t in tokens if t.kind == "number"], _key_strict, use_abs=True)
+        self.bare = _Index([t for t in tokens if _is_bare(t) and not _is_small_integer(t)], lambda t: ("number",))
 
     def find(self, token: Token) -> tuple[Token, str] | None:
-        """Look `token` up without consuming anything: one source number may back many deliverable numbers."""
-        hit = self.strict.take(token, consume=False)
+        hit = self.strict.take(token, exact=_is_small_integer(token), consume=False)
         if hit:
             return hit, "exact"
-        if not token.is_numeric:
+        if token.kind != "number" or _is_small_integer(token):
             return None
-        hit = self.relaxed.take(token, consume=False)
-        if hit:
-            return hit, "unit/sign ignored"
-        for shift in SCALE_SHIFTS:
-            for factor, exponent in ((Decimal(10) ** shift, shift), (Decimal(10) ** -shift, -shift)):
-                scaled = Token("number", token.number * factor, token.step * factor, token.unit, token.currency)
-                hit = self.relaxed.take(scaled, consume=False)
+        hit = self.signed.take(token, exact=True, consume=False)
+        if hit and hit.number != token.number:
+            return hit, "sign differs"
+        if not token.unit:
+            for shift in LOOSE_SCALE_SHIFTS:
+                probe = Token("number", token.number / (Decimal(10) ** shift), Decimal(0))
+                hit = self.bare.take(probe, exact=True, consume=False)
                 if hit:
-                    return hit, f"scale shifted by 10^{exponent}"
+                    label = "currency label only on one side" if shift == 0 else f"scale shifted by 10^{-shift}"
+                    return hit, f"{label} (source is a bare number)"
         return None
 
 
@@ -1022,6 +1085,7 @@ def trace_docs(deliverable: Doc, sources: list[Doc], ignore_years: bool = True) 
         "command": "trace",
         "deliverable": {"file": deliverable.path.as_posix(), "language": deliverable.language,
                         "number_format": deliverable.locale},
+        "bracketed_values": deliverable.bracketed,
         "sources": [{"file": d.path.as_posix(), "number_format": d.locale, "numbers": len(d.tokens)} for d in sources],
         "summary": {"numbers_checked": len(considered), "traced": traced_exact, "traced_loosely": traced_loose,
                     "untraced": len(untraced), "ignored_period_labels": len(deliverable.tokens) - len(considered)},

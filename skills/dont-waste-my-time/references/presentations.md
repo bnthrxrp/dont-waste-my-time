@@ -42,26 +42,28 @@ Settle it before writing any slide; rebuilding in another format doubles the cos
 
 Pick the pattern that matches the objective. Each arrow is about one slide; drop any step the decision doesn't need. The answer always comes before the support.
 
-- **Decision deck**: Title → Recommendation and the ask (what, cost, by when) → 2-4 reasons, one slide each → Options compared (at least two real alternatives, including doing nothing, each with why it loses) → Risks and mitigations with owners → Financials and plan → Decision requested and next steps → Appendix.
+- **Decision deck**: Title → Recommendation and the ask (what, cost, who decides, by when) → 2-4 reasons, one slide each → Options compared (at least two real alternatives, including doing nothing, each with why it loses) → Risks and mitigations with owners → Financials and plan → Decision requested and next steps → Appendix.
 - **Business / performance review**: Title → Summary: performance vs target and the one thing that needs action → Headline KPIs vs target and prior period → Drivers of the variance (bridge) → Exceptions with root cause → Outlook vs target → Actions (owner, date) and decisions needed → Appendix by unit.
 - **Board deck**: **Cover/summary slide** with five lines: purpose (decision, discussion or information), decision required, recommendation, 3-5 key numbers, key risks → Context the board needs, one slide, only what changes the decision → Evidence for the recommendation → Alternatives considered → Risks, mitigations and what would make us stop → Decision or resolution wording → Appendix.
 - **Research / insight deck**: Title → The answer to the research question → 3-5 findings, one per slide, each with evidence and confidence → What it means for us → Recommended actions → Method, sample and limits (one slide or appendix) → Appendix.
 - **Status update**: Overall status vs plan with a one-line reason → Milestones done vs planned → Issues and risks with owners → Decisions or help needed → Next period. Usually 1-3 slides.
 
+**Never invent process facts**, in board decks above all: who was consulted, who agreed or signed off, what was piloted or validated, which options management reviewed. State them only when the user supplied them; otherwise write `[TBD: who reviewed or approved this, owner]`. Alternatives you generated are "alternatives assessed in this deck", not "options the team considered".
+
 ## Slide anatomy
 
 Every content slide has these parts, each in the same position throughout the deck:
 
-1. **Takeaway title**: a full sentence that states the so-what in factual terms (no "strong" or "disappointing"), at most 2 lines (about 15 words), with the key number when there is one. Put it in the slide's **title placeholder**, not a free text box: outline view, screen readers and the checks read it there.
-2. **Body that proves the title and nothing else**: one main visual or table. Use a second visual only when the comparison between the two is the point.
-3. **Source/notes line** at the bottom: source, period, definitions, and the status of estimates or calculations. Required on every slide with numbers.
+1. **Takeaway title**: a full sentence that states the so-what in factual terms (no "strong", "disappointing" or a loose "significant"), at most 2 lines (about 15 words), with the decisive number when there is one. If it needs "and" to join two independent claims, split the slide. Put it in the slide's **title placeholder**, not a free text box: outline view, screen readers and the checks read it there.
+2. **Body that proves the title and nothing else**: one main visual or table when the evidence is quantitative, otherwise a few short bullets or sentences. Use a second visual only when the comparison between the two is the point. Bullets are for parallel items, at most two levels; anything with a cause, condition, comparison or caveat is a full sentence.
+3. **Source/notes line** at the bottom: source with as-of date, period, definitions, and the status of estimates or calculations. Required on every slide with numbers.
 4. **Slide number**, from the layout where the tool allows it.
 
-**Appendix** for everything a reader may ask for but doesn't need to follow the argument: detail tables, breakdowns by unit, method, sensitivities. Appendix slides keep takeaway titles and source lines. Point to them from the main slide ("Detail: A3").
+**Appendix** for everything a reader may ask for but doesn't need to follow the argument: detail tables, breakdowns by unit, method, sensitivities. Appendix slides keep source lines and may use descriptive titles ("A3. Gross margin by region, FY2024-26"). Point to them from the main slide ("Detail: A3"). Never put a caveat that changes the recommendation only in the appendix or the notes.
 
 **Placeholders in slides.** Make every `[TBD: what, owner]` visible: bold, in a distinct highlight color. Never plot a missing value as zero or leave it out of a chart silently: chart the known values and annotate the gap.
 
-**Density limits** (heuristics; the template, the brief or the audience can override them):
+**Density limits** (heuristic review flags, not research findings; the template, the brief or the audience can override them):
 
 | | Presented | Pre-read |
 |---|---|---|
@@ -78,7 +80,7 @@ When a slide breaks a limit, cut words, split the slide or move detail to the no
 
 Run both on the ghost deck, then again on the built file.
 
-**Horizontal: the titles alone tell the story.** Extract them with `python3 ${CLAUDE_SKILL_DIR}/scripts/doc_text.py deck.pptx --titles` and read the list as one paragraph. It passes when:
+**Horizontal: the titles alone tell the story.** Extract them with `python3 ${CLAUDE_SKILL_DIR}/scripts/doc_text.py deck.pptx --titles` and read the main-body titles as one paragraph. It passes when:
 - the answer and the ask appear in the first two content titles;
 - every title is a claim, not a topic;
 - each title supports the opening answer or follows from the previous one, with no gap a reader must fill;
@@ -91,7 +93,7 @@ A title the story needs but no slide supports means a missing slide. A slide who
 
 ## Presented vs pre-read decks
 
-Infer which one from the request ("for the meeting", "to send ahead", "board pack"). Board packs and business reviews sent in advance are pre-reads. If one deck must do both, build the pre-read and put the speaking points in the notes.
+Infer the mode from the request ("for the meeting", "to send ahead", "board pack") and state it in the confirmation line. Board packs and business reviews sent in advance are pre-reads; never ship a sparse presented-style deck as a pre-read. If one deck must do both, build the pre-read and put the speaking points in the notes.
 
 | | Presented (someone talks over it) | Pre-read (read alone, often forwarded) |
 |---|---|---|
@@ -110,7 +112,7 @@ Slides carry claims and evidence, not the speaker's script: never put on the sli
 - **Type**: one typeface family, two at most (titles and body). Build hierarchy with size and weight, not more fonts or colors. Sentence titles at 24-28 pt: the 36-44 pt that the pptx skill suggests is sized for short labels and forces long titles onto three lines.
 - **Palette**: a neutral base (dark gray text, light gray for context data, white background) plus **one accent** for the data the title is about. Add a second color only for a second meaning, such as plan vs actual.
 - **Semantic color**: color means something in business terms, never decoration. Favorable and unfavorable follow business polarity (rising cost is unfavorable), stay the same across the deck, and always come with a sign, label or arrow, never color alone. The same series has the same color on every slide.
-- **No decoration that carries no evidence**: no stock photos, decorative icons, clip art, 3D effects, gradients, shadows or title underlines. Where the pptx skill's design ideas (a bold mood palette, icons in circles, a visual on every slide, varied layouts for variety's sake) conflict with this file, this file wins for executive material. A clear claim on a plain slide beats a decorated one; change the layout only when the shape of the content changes.
+- **No decoration that carries no evidence** in decision, review and board decks: no stock photos, decorative icons, clip art, 3D effects, gradients, shadows or title underlines. A keynote or training talk built for engagement may use imagery. Where the pptx skill's design ideas (a bold mood palette, icons in circles, a visual on every slide, varied layouts for variety's sake) conflict with this file, this file wins for executive material. A clear claim on a plain slide beats a decorated one; change the layout only when the shape of the content changes.
 - **Numbers**: one unit, precision and format per metric across the whole deck ($86.2M everywhere, not $86M on one slide and 86,200,000 on another). Put units in titles, axis labels or column headers. Write percentage-point changes as pp, not %. Use a minus sign or parentheses for negatives, consistently. Round to what the decision needs, usually 2-3 significant digits. Totals add up as displayed, or a note says they don't because of rounding.
 - **Tables**: about 7 rows × 6 columns at most in the main body. Right-align numbers and highlight the row or column the title is about. Bigger tables go to the appendix.
 
@@ -207,13 +209,14 @@ Changes (11 → 7 slides + 2 appendix):
 
 ## Evidence notes
 
-Takeaway titles and storyline-first rest mostly on practitioner guidance and a few small studies; the ghost deck itself has no accessed study behind it. Treat these as support for defaults, not measured effects on executive decisions.
+Most rules here are practitioner defaults. The studies behind them are small, mostly lab or crowdsourced, and measure learning or recall, not executive decisions; storyline-first and the ghost deck have no study behind them. Never cite any of this in a deliverable as a measured effect.
 
-- Garner, Alley et al., assertion-evidence slides (conference abstract; journal version IJEE 29(6), 2013), https://pure.psu.edu/en/publications/assertion-evidence-slides-appear-to-lead-to-better-comprehension--2/: in one short narrated lecture, students shown sentence headlines with visual evidence scored higher on complex-concept questions than those shown topic-and-bullet slides, while reading less text. Run by the method's developers; one topic, novice students.
-- Stratrix, "The pyramid principle" (practitioner page, undated), https://stratrix.com/craft/pyramid-principle: a topic heading leaves the thinking to the reader; moving the answer to the front without rewriting topic headings as claims doesn't fix a deck. No outcome data.
-- Tufte, quoting the Columbia Accident Investigation Board (2003), https://www.edwardtufte.com/notebook/columbia-accident-investigation-board-the-boeing-powerpoint-slide/: the headings, layout and bullet sizes of one briefing slide steered managers toward what they already believed, and the uncertainty got lost. A single case; Tufte's view that the tool itself is at fault is disputed. Hence caveats as sentences on the slide they qualify.
-- Ajani, Lee, Xiong, Nussbaumer Knaflic, Kemper and Franconeri, "Declutter and Focus", IEEE TVCG, 2021, https://par.nsf.gov/servlets/purl/10350268: a headline stating the pattern, one highlight color and an annotation improved memory for the highlighted pattern; decluttering alone mainly raised professionalism ratings.
-- Kim, Setlur and Agrawala, CHI 2021, https://arxiv.org/abs/2101.08235: readers adopt a caption's message only when the chart also emphasizes that feature; hence the highlight must match the title. Kong, Liu and Karahalios, CHI 2018, https://mail.zcliu.cs.umd.edu/vistitles/CHI18-VisTitles.pdf: a title's slant shapes the message readers take from the same chart; hence factual titles.
-- Rogers and Lasky-Fink, book excerpt, https://behavioralscientist.org/when-writing-for-busy-readers-less-is-more/: most people asked to improve a summary added words rather than cut (one reported experiment, secondary); hence the explicit keep/cut decision per slide.
+- **Takeaway titles are a default with moderate support, not a proven effect.** Garner, Alley et al. found better comprehension with assertion-evidence slides (sentence headline plus visual evidence) than with topic-and-bullet slides: conference version with 111 participants (abstract: https://pure.psu.edu/en/publications/assertion-evidence-slides-appear-to-lead-to-better-comprehension--2/); journal version with 110 engineering students ("How the design of presentation slides affects audience comprehension: A case for the assertion-evidence approach", International Journal of Engineering Education 29(6), 2013, 1564-1579). Limits: run by the method's developers, one short narrated lecture, and control slides built to violate six multimedia principles, so a bundle of changes was tested and the headline's own effect is not isolated.
+- Farkas, informal assessment of Alley's slide design (2010), https://faculty.washington.edu/farkas/dfpubs/Farkas-Assessment%20Of%20Alleys%20Slide%20Design.pdf: calls the claims "sweeping and poorly supported", says the weak controls make the gains "surprisingly modest" and that the speaker's role is ignored, yet sees "a good case for sentence-style slide titles" and finds brief, well-phrased bullets harmless. Hence sentence titles everywhere, bullets allowed, visuals where the evidence is quantitative.
+- Stratrix, "The pyramid principle" (practitioner page, undated), https://stratrix.com/craft/pyramid-principle: a topic heading leaves the thinking to the reader; moving the answer to the front without rewriting topic headings as claims doesn't fix a deck. Its pricing-deck story is hypothetical; no outcome data.
+- **No script on slides and no decoration rest on multimedia-learning research, extrapolated to decks and verified only at abstract or summary level.** Adesope and Nesbit, Journal of Educational Psychology 104(1), 2012 (meta-analysis): keyword-style on-screen text, not a verbatim transcript, carried most of the benefit of adding text to narration. Yue, Bjork and Bjork, Journal of Educational Psychology, 2013, doi 10.1037/a0031971: on-screen text identical to the narration reduced recall and transfer. Sundararajan and Adesope, Educational Psychology Review 32(3), 2020: interesting but irrelevant details reduced learning (g ≈ -0.33 across 58 studies, per secondary summaries; moderator findings conflict). Noetel et al., Review of Educational Research 92(3), 2022, https://doi.org/10.3102/00346543211052329: design matters more for complex material and for system-paced settings such as live presentations.
+- Columbia Accident Investigation Board, Report Vol. 1 (2003), ch. 7 p. 191 and ch. 8 p. 201, https://govinfo.library.unt.edu/caib/news/report/pdf/vol1/chapters/chapter7.pdf: on one briefing slide the decisive fact sat at the bottom of six levels of bullets, "significant" was used with meanings from trivial to fatal, and the headings, arrangement and bullet size "served to highlight what management already believed". One illustrative case (the slide analysis is Tufte's, quoted by the Board) within a multi-causal account. Hence the decisive number in the title, at most two bullet levels, and caveats as sentences.
+- Ajani, Lee, Xiong, Nussbaumer Knaflic, Kemper and Franconeri, "Declutter and Focus", IEEE TVCG, 2021, https://par.nsf.gov/servlets/purl/10350268: with 24 undergraduates and 10-second views, a headline stating the pattern plus one highlight and an annotation made recall of the focal conclusion more likely; decluttering alone raised professionalism ratings, not comprehension.
+- Kim, Setlur and Agrawala, CHI 2021 (crowdsourced, line charts), https://arxiv.org/abs/2101.08235: readers adopt a caption's message only when the chart also emphasizes that feature; hence the highlight must match the title. Kong, Liu and Karahalios, CHI 2018, https://mail.zcliu.cs.umd.edu/vistitles/CHI18-VisTitles.pdf: a title's slant shapes the message readers take from the same chart; the no-evaluative-words rule extends this finding.
+- Adams, Converse, Hales and Klotz, "People systematically overlook subtractive changes", Nature 592, 2021 (read via https://www.gwern.net/doc/design/2021-adams.pdf): people default to adding, and an explicit cue to consider removing raised the share who subtracted. Mostly online samples and non-business tasks. Hence the explicit keep/cut mark for every slide.
 - W3C, WCAG 2.1 SC 1.4.1 Use of Color, https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html: color is never the only means of conveying information.
-- Not cited yet (dossier entries not accessed): Mayer's multimedia principles (coherence, signaling, redundancy) via the redundancy and seductive-details meta-analyses, and Alley's 2006 headline study. The no-script and no-decoration rules await them.

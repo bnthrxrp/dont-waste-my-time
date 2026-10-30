@@ -22,7 +22,7 @@ Start from the reader's question, then pick the form.
 
 | Question | Use | Avoid |
 |---|---|---|
-| How do categories compare? | Bars sorted by value (horizontal when labels are long), zero baseline, direct value labels | Pies, bubbles, alphabetical order when the order isn't the point |
+| How do categories compare? | Bars sorted by value unless the categories have an inherent order (time, funnel stage, size band); horizontal when labels are long; zero baseline; direct value labels; "Other" last | Pies, bubbles, alphabetical order when the order isn't the point |
 | How did it change over time? | Line for many periods or a trend; columns for a few discrete periods whose amounts are the message | Unevenly spaced periods on an even axis; bars for long series |
 | What share of the whole? | Sorted bars of shares; one 100% stacked bar per whole to compare 2-3 wholes; pie or donut only for 2-3 labeled slices | Pies with more slices; several pies side by side; exploded, nested or 3D pies |
 | How are values spread? | Histogram; box or strip plot to compare groups; n shown | A bar of the mean alone, which hides the spread |
