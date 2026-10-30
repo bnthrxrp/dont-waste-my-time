@@ -52,10 +52,10 @@ OVERFLOW_PAGE = """<!doctype html><html><head><meta name="viewport" content="wid
 SCROLL_PAGE = """<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scroll test</title></head><body>
 <h1>Scorecards</h1>
-<div id="wide-wrap" class="tbl-wrap" style="width:600px;overflow-x:auto;border:1px solid #ccc">
+<div id="wide-wrap" class="tbl-wrap" style="width:600px;max-width:100%;overflow-x:auto;border:1px solid #ccc">
   <table style="width:900px"><tr><td>Wide scorecard A</td><td>Wide scorecard B</td><td>Wide scorecard C</td></tr></table>
 </div>
-<div id="fits-wrap" class="tbl-wrap" style="width:600px;overflow-x:auto;border:1px solid #ccc">
+<div id="fits-wrap" class="tbl-wrap" style="width:600px;max-width:100%;overflow-x:auto;border:1px solid #ccc">
   <table style="width:300px"><tr><td>Fitting scorecard</td></tr></table>
 </div>
 <div id="tall-table-wrap" style="height:40px;overflow-y:auto"><table><tr><td>row</td></tr><tr><td>row</td></tr><tr><td>row</td></tr><tr><td>row</td></tr></table></div>
@@ -262,7 +262,7 @@ class HtmlRendering(unittest.TestCase):
     def test_scroll_needed_summary_and_section_in_text_output(self):
         page = self.tmp / "s.html"
         page.write_text("<!doctype html><html><head><meta name='viewport' content='width=device-width'></head><body>"
-                        "<div class='tbl-wrap' style='width:600px;overflow-x:auto'><table style='width:900px'>"
+                        "<div class='tbl-wrap' style='width:600px;max-width:100%;overflow-x:auto'><table style='width:900px'>"
                         "<tr><td>Wide scorecard</td></tr></table></div></body></html>", encoding="utf-8")
         proc = h.run_script("render.py", page, "--out", self.tmp / "o")
         self.assertEqual(proc.returncode, 0)
