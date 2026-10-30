@@ -102,17 +102,17 @@ Default to grey plus one accent on what the title names. Add a color only when i
 
 ## Uncertainty and forecasts
 
-- **Show a range whenever the uncertainty could change the decision**: a forecast band that crosses the target, options whose intervals overlap. Otherwise state the uncertainty in the subtitle or a note.
+- **Hard: never present an estimate as a point fact.** Every estimate, forecast, survey result or model output carries its range next to the number, not only in a footnote: "≈ €4.2 M (range €3.8-4.6 M), estimate". A visible point estimate pulls readers toward ignoring the uncertainty. If no range was estimated, say so ("single-point forecast, no range estimated"). Round estimates more coarsely than actuals.
+- **Make the range prominent where it could change the decision**: a band that crosses the target, options whose intervals overlap.
 - **Hard: label what every interval is**: "80% prediction interval", "low/high scenario", "min-max of last 12 months", "±1 SD". Unlabeled error bars are common and ambiguous.
-- Show uncertain estimates as a dot with an interval line, or a line with a shaded band, not as bars with error bars: a bar makes the values inside it look more likely than those above it.
+- When readers must compare estimates or judge how likely values are, show a dot with an interval line, or a line with a shaded band, not bars with error bars: a bar makes the values inside it look more likely than those above it. Counts and audited actuals can stay as bars.
 - Don't make readers judge significance from overlapping intervals. Say it: "B's range overlaps A's; the data can't separate them."
 - **Forecasts look different from actuals**: dashed lines or hatched bars, a vertical rule at the last actual marked "Actual | Forecast", the range as a light band, and the forecast's basis and vintage ("FC, Sep update").
-- **Hard: never present an estimate as a point fact.** Write "≈ €4.2 M (range €3.8-4.6 M), estimate" in the title or label, and round estimates more coarsely than actuals.
 - Translate the range into the decision: "Even at the low end, payback stays under 3 years."
 
 ## Business notation
 
-A practical convention inspired by IBCS (standardized as ISO 24896), not a mandate. Use it when a deliverable compares scenarios, unless the user's template or company standard defines its own; then follow theirs. The point is that one encoding means one scenario throughout the deliverable.
+A practical convention inspired by IBCS, not a mandate. IBCS's notation is standardized as ISO 24896 "Notation for business reporting" (published 11 June 2026). One rule always applies: within a deliverable, one encoding means one scenario everywhere, and a scenario's color or fill is never reused for an unrelated series. If the user's template or company standard defines encodings, follow it; otherwise use the table below. The table follows the commonly documented IBCS-style convention, which vendors render slightly differently, so never call a deliverable IBCS- or ISO-compliant unless it has been checked against the standard's text.
 
 | Scenario | Label | Bars and columns | Lines |
 |---|---|---|---|
@@ -153,21 +153,21 @@ Use a table when the reader needs exact values, looks up their own row, or compa
 | Anti-pattern | Fix |
 |---|---|
 | 3D charts | The 2D equivalent |
-| Pie with more than 3 slices, or several pies compared | Sorted bars of shares; one 100% stacked bar per whole |
+| Pie with more than 3 slices (heuristic), or several pies compared | Sorted bars of shares; one 100% stacked bar per whole |
 | Rainbow or arbitrary palette | Grey + one accent; Okabe-Ito for true categories; single-hue ramp for ordered values |
 | Truncated bar axis | Zero baseline, or dots/line with a labeled range, or variance bars |
-| Dual y-axes | Indexed lines, or two aligned panels |
+| Dual y-axes when the question isn't the timing of two different-unit series | Two aligned panels, or indexed lines with endpoint labels |
 | Spaghetti (more than about 4 overlapping lines) | Highlight 1-2 series and grey the rest, or small multiples on one scale |
 | Unlabeled axes or missing units | Axis title with unit, or direct labels and no axis |
 | Legend hunting | Direct labels at line ends and on bars |
-| Decorative icons, clip art, background images | Remove them; at most one data-relevant image for the single message to remember, never replacing labels or axes |
+| Decorative icons, clip art, background images | Remove them; if the user wants imagery, keep it off the data, labels and axes |
 | Gauges, speedometers, dials | The number + Δ vs target with sign; a bullet bar |
 | Chartjunk competing with data (heavy grids, borders, shadows, labels on every point) | Declutter, then one accent and one annotation |
 | Bars with error bars for estimates | Dot + labeled interval |
 | Red/green status alone | Polarity color + sign or icon + the value |
 | Stacked bars used to compare middle segments | Grouped bars or small multiples |
 
-On embellishment: embellished charts were read as accurately as plain ones and remembered better weeks later, and unusual charts are more memorable. But memorability is not comprehension, and imagery can bias how readers read the data. So use standard forms for analysis, allow at most one memorable element for the single message, and never trade accuracy for it.
+On embellishment the evidence is thin and mixed. One small study found embellished charts were read as accurately as plain ones and remembered better weeks later, and unusual charts are more memorable. But memorability is not comprehension, and imagery can bias how readers read the data. No rule follows either way: default to plain, standard forms, and never trade accuracy for recall.
 
 ## Implementation notes
 
