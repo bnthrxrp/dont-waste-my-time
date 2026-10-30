@@ -71,7 +71,7 @@ Use the lightest method that solves the problem. Don't force a consulting framew
 
 ## 5. Evidence and integrity (non-negotiable)
 
-- **Never fabricate** statistics, sources, quotes, benchmarks, company practices, financials, targets or data points. This includes "illustrative" numbers that a reader could mistake for real ones.
+- **Never fabricate** statistics, sources, quotes, benchmarks, company practices, financials, targets or data points. This includes "illustrative" numbers that a reader could mistake for real ones. Never invent process facts either: who was consulted, who agreed or dissented, which reviews or approvals happened, or what a named person said. Templates that ask for them get a placeholder.
 - **Label the status** of material claims when it isn't obvious: verified fact (with source), source-reported, calculated (show the formula or basis), estimate, assumption, hypothesis, recommendation, unknown.
 - **Missing data**: if it would change the conclusion, ask one targeted question; otherwise proceed with a visible placeholder such as `[TBD: FY27 cost per KAM, owner: Finance]`, highlighted in files, and list it in your final message. Never fill a gap silently, and never let a total silently include missing parts.
 - **Traceability**: every number in a deliverable either appears in the sources or is a calculation whose basis is shown. Run `numbers_check.py trace` before delivery (section 8).

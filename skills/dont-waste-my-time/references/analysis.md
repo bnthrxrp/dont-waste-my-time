@@ -40,7 +40,7 @@ Use it for diagnoses, recommendations and business cases.
 3. **Test with the data you have**, cheapest decisive test first. For each condition, state the result that would disprove it and look for that result.
 4. **Revise or kill.** If a condition fails, change the answer; don't rescue it with qualifiers. If the data cannot test a condition, carry it into the deliverable labeled assumption or hypothesis and name the data that would settle it.
 
-Keep a second candidate answer alive until a test separates the two. A tested hypothesis becomes a finding with its evidence; an untested one stays a hypothesis in the text.
+Keep a second candidate answer alive until a test separates the two: a single hypothesis invites a search for confirming evidence only. A tested hypothesis becomes a finding with its evidence; an untested one stays a hypothesis in the text.
 
 **Don't use it** for pure reporting (describe what changed, and hypothesize only to explain material variances), for translation or proofreading, or when the user asks for neutral exploration. In that last case, set out the competing explanations and what would distinguish them, without picking one.
 
@@ -126,7 +126,7 @@ The answer and the ask come first; everything else supports them.
 When several parties are involved, name:
 - who recommends;
 - the single person who decides;
-- who must agree before the decision (unresolved concerns go to the decider; agreeing is not a veto);
+- who must sign off before the decision, and whether each sign-off can block it and what happens if they object (state it explicitly: frameworks, including Bain's own articles on RAPID, disagree on whether sign-off is a veto);
 - who executes;
 - who only gives input.
 
@@ -160,7 +160,7 @@ After (the logic, with placeholders the CFO can fill):
 Apply this to High-stakes work and to any recommendation that commits significant money or is hard to reverse. Skip it for routine decisions.
 
 - **Real alternatives.** Evaluate at least two serious alternatives and give the reason each was dropped. A single-option recommendation says why no alternative is credible. Imposing a pre-chosen solution and cutting the search for alternatives short are associated with failed decisions.
-- **Outside view.** Anchor base-case timing, ramp and adoption on a reference class: comparable past projects, the company's own track record, or base rates from a source you opened in this session. If none exists, say so, label the base case estimate and widen the range. Never invent a base rate.
+- **Outside view.** Anchor base-case timing, cost, ramp and adoption on a named reference class: comparable past projects, the company's own track record, or base rates from a source you opened in this session. Show the gap between that and the internal estimate. If none exists, label the figure "inside-view estimate, not benchmarked", give a range, and never invent a base rate. Large-sample forecasts are systematically optimistic (transport-infrastructure data); assume corporate plans share the bias until shown otherwise.
 - **Worst case with an origin.** Say where the downside comes from, including competitor response. Base case minus 10% is not a worst case.
 - **Pre-mortem.** Assume the decision has failed by the review date and list 3-7 specific causes, each with a mitigation or early-warning signal and an owner. Carry the ones that change the plan or need monitoring into the risks; leave out generic ones.
 - **Disconfirming evidence.** State what would prove the recommendation wrong, that you looked for it, and what you found.
@@ -175,7 +175,23 @@ Apply this to High-stakes work and to any recommendation that commits significan
 
 ## Evidence notes
 
-Sections 6 and 8 draw on the sources below, each opened in full or in part. They are practitioner guidance, interviews or small studies; none shows that a given checklist improves outcomes. The structuring, variance and business-case conventions are standard practice and are not sourced here.
+Sections 2, 6 and 8 draw on the sources below. Each was opened in full or in part and checked by an independent validator (research/validation/A-strategy-combined.md in the skill's repository). They are practitioner guidance, interviews or small and correlational studies; none shows that a given checklist improves outcomes. The structuring, variance and business-case conventions are standard practice and are not sourced here.
+
+**Never cite these as established:**
+- Klein's "30%" premortem improvement (not traceable to the underlying study);
+- Schoemaker's student-experiment figures (not reproduced);
+- Bain's "95% correlation" (no method given);
+- Nutt's "half fail" without its definition (not in sustained, full use after two years).
+
+**When quoting the decision-process literature**, give the study, sample, definition and limitation. For example: "Lovallo and Sibony (McKinsey Quarterly, 2010): in 1,048 self-reported decisions, top-quartile decision process went with ROI 6.9 percentage points higher than the bottom quartile (673 with ROI data); correlational."
+
+- **Flyvbjerg, "From Nobel Prize to Project Management: Getting Risks Right"** (Project Management Journal, 2006; arXiv full text):
+  - transport-infrastructure cost forecasts were systematically low, with no improvement over the 70-year period studied;
+  - basis for reference-class forecasting.
+- **Camuffo, Cordova, Gambardella and Spina** (Management Science, 2020):
+  - randomized trial with 116 early-stage startups;
+  - training in hypothesis testing improved performance;
+  - setting is startups, not corporate analysis.
 
 - **Kahneman, Lovallo and Sibony, "Before You Make That Big Decision...", Harvard Business Review, June 2011** (read via a university-hosted reprint, <https://faculty.washington.edu/pathaksd/BBUS549/Required%20Readings/Before%20You%20Make%20that%20Big%20Decision.pdf>):
   - review the process behind a proposal, not only its content;
@@ -193,4 +209,4 @@ Sections 6 and 8 draw on the sources below, each opened in full or in part. They
 - **Secondary sources:**
   - Wikipedia, "MECE principle" (<https://en.wikipedia.org/wiki/MECE_principle>): MECE tests coverage and distinctness, not relevance, and can exclude useful redundancy.
   - Wikipedia, "Pareto principle" (<https://en.wikipedia.org/wiki/Pareto_principle>): 80/20 is a rule of thumb; real splits vary.
-- **Schoemaker, "Scenario Planning: A Tool for Strategic Thinking", MIT Sloan Management Review, Winter 1995** (<https://sloanreview.mit.edu/article/scenario-planning-a-tool-for-strategic-thinking/>): scenarios vary several uncertainties together, and vivid, coherent scenarios can seem more probable than they are.
+- **Schoemaker, "Scenario Planning: A Tool for Strategic Thinking", MIT Sloan Management Review, Winter 1995** (<https://sloanreview.mit.edu/article/scenario-planning-a-tool-for-strategic-thinking/>): scenarios vary several uncertainties together. The warning that vivid, coherent scenarios can seem more probable than they are was read in the PDF by one validator and not reproduced by a second; treat it as plausible guidance, not a finding.

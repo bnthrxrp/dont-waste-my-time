@@ -546,8 +546,16 @@ def check_unsupported_claims(paragraphs: list[Paragraph], lang: str) -> list[Fin
     return findings
 
 
+# "<Name> will/should/vai/deve ...": a sentence-initial capitalised word followed by a modal is the actor.
+_ACTOR_BEFORE_MODAL = re.compile(
+    r"^\W*([A-ZÀ-Ý][\wÀ-ÿ'-]+)\s+(?:will|shall|should|must|to|needs\s+to|vai|v[ãa]o|deve|devem|ir[áa]|precisa|ficar[áa])\b")
+
+
 def _has_owner(sentence: str, lang: str) -> bool:
     if ROLE_RES[lang].search(sentence):
+        return True
+    actor = _ACTOR_BEFORE_MODAL.match(sentence)
+    if actor and actor.group(1) not in NOT_AN_OWNER:
         return True
     words = re.findall(r"[A-ZÀ-Ý][\wÀ-ÿ'-]+", sentence)
     first_word = sentence.split()[0].strip("\"'“([") if sentence.split() else ""
