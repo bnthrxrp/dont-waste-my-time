@@ -56,6 +56,8 @@ Notes
   text boxes ("textbox 1"). Parts a document does not have are skipped silently.
 * HTML extraction is static: text created by JavaScript at runtime is not seen.
   Use render.py to look at the rendered page.
+* Markdown/text files skip a leading YAML front matter block ("---" / "key: value" / "---"); line
+  numbers still refer to the original file.
 * Legacy .doc/.ppt/.xls are not supported; convert them with LibreOffice first.
 * Exit codes: 0 ok, 1 usage/IO error (unreadable file, unsupported format,
   missing library).
@@ -79,6 +81,7 @@ SUPPORTED_EXTENSIONS = (".pptx", ".docx", ".xlsx", ".csv", ".md", ".txt", ".html
 # Safety valves so a pasted data dump cannot produce millions of units.
 MAX_XLSX_CELLS = 500_000
 MAX_CSV_ROWS = 200_000
+FRONT_MATTER_MAX_LINES = 200  # a front matter block longer than this is not front matter
 
 Unit = dict[str, Any]
 
@@ -709,10 +712,30 @@ _MD_RULE = re.compile(r"^\s*([-*_=])\1{2,}\s*$")
 _MD_FENCE = re.compile(r"^\s*(```|~~~)")
 
 
+def _front_matter_end(lines: list[str]) -> int:
+    """Number of leading lines taken by a YAML front matter block ("---" ... "---"), or 0 if there is none.
+
+    The block must look like YAML (first line after the opening rule is "key: ..."), so a document that merely
+    starts with a horizontal rule is not swallowed.
+    """
+    if not lines or lines[0].strip() != "---":
+        return 0
+    if len(lines) < 3 or not re.match(r"^[\w.-]+\s*:", lines[1]):
+        return 0
+    for index in range(2, min(len(lines), FRONT_MATTER_MAX_LINES)):
+        if lines[index].strip() in ("---", "..."):
+            return index + 1
+    return 0
+
+
 def _markdown_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     units: list[Unit] = []
     in_code = False
-    for number, raw in enumerate(_read_text_file(path).splitlines(), start=1):
+    lines = _read_text_file(path).splitlines()
+    skip = _front_matter_end(lines)  # metadata such as "max_turns: 30" is not document content
+    for number, raw in enumerate(lines, start=1):
+        if number <= skip:
+            continue
         line = raw.rstrip()
         if _MD_FENCE.match(line):
             in_code = not in_code

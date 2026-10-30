@@ -36,10 +36,10 @@ Polarity:           higher is better | lower is better | in range [a-b] | neutra
 Status rule:        green ≥ phased target; amber within [TBD: tolerance, owner]; red beyond tolerance
 Type:               lagging or leading; output or input (controllable)
 Owner:              the person who explains movements and owns the action
-Caveats:            known gaps of the proxy; guardrail metric that would expose gaming (e.g. sales vs returns)
+Caveats:            known gaps of the proxy; for incentive-linked KPIs, a guardrail metric that would expose gaming
 ```
 
-- **Never invent a target or threshold.** No target: write `[TBD: target, owner]` in the spec and show "No target" on the card. A tolerance band you suggest is a recommendation: label it on the screen itself ("proposed, to be confirmed by <owner>"), not only in your final message.
+- **Never invent targets, tolerances, thresholds or owners.** No target: write `[TBD: target, owner]` in the spec and show "No target" on the card. A target without an agreed tolerance gets two states only (at or better than target, worse than target) and `[TBD: tolerance, owner]` in the definitions. Bands you propose at the user's request are labeled on the screen itself ("proposed, to be confirmed by <owner>"), not only in your final message.
 - **Write formulas two analysts would compute identically**: filters, exclusions, currency, period boundaries, returns, duplicates.
 - **Aggregate ratios from components** (margin %, OTIF, DSO, coverage, conversion): Σ numerator / Σ denominator. If only per-unit ratios exist, weight by the denominator and say so in the definition. Never average percentages across channels or months.
 
@@ -51,7 +51,7 @@ Caveats:            known gaps of the proxy; guardrail metric that would expose 
 - **In-range metrics** (sell-in/sell-out ratio, price index, stock cover where both shortage and excess hurt): favorable inside the band, unfavorable outside it on either side. State the band.
 - **Neutral metrics** (units shipped, visits, market size) get no status color; their arrows stay grey.
 - **No watermelons** (green outside, red inside). Derive an aggregate's status from its components as well as its total: show "2 of 3 channels off track" on the tile, and never show an aggregate green while a material component is red. Define "material" in the KPI spec (share of sales, value at stake). The same applies to project and program roll-ups.
-- **Limit alerts to what needs action.** Flag only breaches someone can act on, ranked by business impact, about five at most on the first screen. Raise a flag on a new or worsening exception, not on every refresh; an unchanged open flag shows its age ("off track 3 weeks") instead of re-alerting. Each flag names the owner and next step, or `[TBD: action, owner]`.
+- **Limit alerts to what needs action.** Flag only breaches someone can act on or decide, ranked by business impact. Show the top items on the first screen and state the selection rule and what was left out ("top 4 of 11, by value at stake"). New or worsening exceptions get full prominence; an unchanged open flag moves to a "carried over" line with its age and owner instead of re-alerting. Each flag names owner, next step and date, or `[TBD: action, owner]`.
 - **One status vocabulary** across the dashboard (e.g. ✓ On track, ! Watch, ✕ Off track): icon, word and color together, same thresholds wherever the metric appears.
 
 ## 4. Targets and comparisons
@@ -61,7 +61,8 @@ Caveats:            known gaps of the proxy; guardrail metric that would expose 
 - **Label every value with its period** ("Sep", "YTD Sep", "MTD to 26 Oct", "L4W"). Show month and YTD together when they tell different stories.
 - **Run-rate and landing estimates** carry the label "estimate" and their method (e.g. MTD actual + remaining working days × trailing 20-day average). Draw them hollow or dashed, never styled as actuals.
 - **Base effects.** Check the comparison base before reporting growth: a weak or falling prior year inflates growth, a one-off in the base distorts it. Say so beside the number and lead with the undistorted comparison (target, budget, two-year).
-- **Variances**: absolute and relative together, signed, labeled favorable or unfavorable by polarity, for each comparison shown. Rate variances are in percentage points (pp).
+- **Variances**: absolute and relative together, signed, labeled favorable or unfavorable by polarity, for each comparison shown. Rate variances are in percentage points (pp). When a material total moves, decompose it into drivers (price, volume, mix or new products; channel, region) before commenting, and explain the movement instead of restating the numbers.
+- **Causes come from the inputs.** Say why a number moved only when the user's material or an opened source says so. Otherwise write "cause not provided" (or label the explanation a hypothesis) and list it as a question for the metric owner.
 - **Mixed frequencies**: never combine weekly and monthly sources in one tile without a separate as-of label per source, and never split monthly data into weeks to make it fit.
 
 ## 5. Data latency and freshness
@@ -79,14 +80,14 @@ Use only the zones that apply, in this reading order (top-left first):
 | Zone | Content | Typical form |
 |---|---|---|
 | 1. Performance at a glance | Headline KPIs vs target and one comparison | KPI cards or a bullet-graph strip |
-| 2. Material changes and exceptions, in words | 3-5 generated sentences: what moved, by how much, against what, why if known, owner and next step | Ranked text list |
+| 2. Material changes and exceptions, in words | Generated sentences: what moved, by how much, against what, cause if the inputs give one, owner and next step | Ranked list with its selection rule |
 | 3. Drivers | Controllable inputs; where the gap sits (channel, region, price/volume/mix) | Variance bars, small multiples, conditional table |
 | 4. Risks and opportunities | Forward-looking: landing estimate, leading indicators, pipeline | Bullet graphs, short list |
 | 5. Decisions and actions | Open decisions, owners, dates, only when the user's material supplies them | Short table |
 
 - **Headline KPI count** follows the dashboard row of the length budgets in briefing.md. Everything else goes to drivers or drill-down.
-- **First screen**: zones 1-2 fit a laptop screen without scrolling. Beyond that, progressive disclosure: overview → driver → detail, one click each, with a visible way back.
-- **Fixed structure for recurring dashboards**: same order, positions and encodings every period, so readers spot change instead of re-learning the page.
+- **First screen**: a monitoring dashboard is fully readable on one laptop screen without scrolling or interaction, zones 1-2 at least. Analytical or narrative formats may run to several pages, but page one stands alone. Beyond it, progressive disclosure: overview → driver → detail, one click each, with a visible way back.
+- **Fixed structure for recurring dashboards**: same order, positions and encodings every period, so readers spot change instead of re-learning the page. If the structure must change, say so at the top.
 - **Link outputs to inputs**: each output card sits above, or links to, the driver view that explains it.
 
 KPI card anatomy (drop the sparkline before the comparison):
@@ -108,7 +109,7 @@ General chart rules (baselines, color, labels, honesty) are in dataviz.md; these
 
 - **Actual vs target: bullet graph.** A bar for the actual, a thin marker for the target, and up to three bands in shades of one muted hue, drawn only where thresholds exist. It replaces gauges, takes less space, and lines up for comparison.
 - **Trend inside a card: sparkline.** No axes, the same window on every card, last point marked. It shows shape; the number lives in the card.
-- **Recurring-review trend**: trailing 6 weeks beside trailing 12 months, prior year faded behind the current year, target markers only where targets exist, growth rate beside the absolute value.
+- **Recurring-review trend** (one useful format, not a rule): trailing weeks beside trailing months, prior year faded behind the current year, target markers only where targets exist, growth rate beside the absolute value.
 - **Same metric across units: small multiples** on a shared axis, sorted by gap or size, not alphabetically.
 - **Variance bars** from a zero line, colored favorable or unfavorable by polarity (not by sign) and labeled with the signed value.
 - **Scorecard tables with conditional formatting**: status icon and word, right-aligned numbers, consistent decimals, rows sorted by impact.
@@ -142,6 +143,7 @@ General chart rules (baselines, color, labels, honesty) are in dataviz.md; these
 - **Text alternatives**: each chart has an accessible name stating its takeaway (`role="img"` with `aria-label`, or a caption), and its data is available as a table.
 - **Reflow at 390 px**: cards stack in priority order, charts resize (SVG `viewBox`, no fixed pixel widths), and the page never scrolls horizontally.
 - **Tables scroll inside their own container**: wrap each table in a block with `overflow-x: auto` and keep the first column sticky. Never let a table widen or clip its card; `overflow: hidden` on the card hides the defect without fixing it.
+- **Headline tables fit at desktop width with no horizontal scrolling.** A scorecard whose last column sits off-screen inside its scroll container hides that metric from the reader. Abbreviate, drop or move columns to drill-down; in-container scrolling is for mobile widths and detail tables.
 - **Print**: `@media print` hides controls, prints the active filters and as-of dates, avoids page breaks inside cards.
 
 ## 11. HTML implementation
@@ -156,7 +158,7 @@ If a frontend or design skill is available, hand it the spec (KPI dictionary, zo
 
 Test the rendered artifact, not the code. Fix, re-render, repeat until clean.
 
-1. **Render and look**: `python3 ${CLAUDE_SKILL_DIR}/scripts/render.py dashboard.html` produces desktop and mobile screenshots and reports console errors and horizontal overflow. Open the images and read them. Zero console errors and zero page overflow are required.
+1. **Render and look**: `python3 ${CLAUDE_SKILL_DIR}/scripts/render.py dashboard.html` produces desktop and mobile screenshots and reports console errors, horizontal page overflow and, at desktop width, tables that need horizontal scrolling. Open the images and read them. Required: zero console errors, zero page overflow, and no "scroll needed at desktop" note on a headline table.
 2. **Exercise every filter and find clipped containers.** Page-level overflow checks miss a table clipped inside its card. Run this (Node + Playwright), extend the loop to buttons and toggles, and treat each `NO CHANGE` or clipped element as a defect:
 ```js
 // NODE_PATH=$(npm root -g) node qa.js dashboard.html
@@ -182,7 +184,7 @@ const { chromium } = require('playwright'), { resolve } = require('path');
 ```
 3. **Recompute 2-3 headline numbers independently** from the source file with a separate script (not the dashboard's code): the top-left KPI, one variance, and one value under a filter. Compare with the rendered text. A mismatch is a blocking defect.
 4. **Polarity audit**: list every colored element (cards, arrows, variance bars, table cells, exception wording) with its metric, polarity, direction and the color shown. Fix any unfavorable move shown as good and any status on a metric without a target.
-5. **Read the "needs attention" text against the data** in the default state and at least one filter state: every number matches, "improved" and "worsened" agree with polarity, and no off-track item is missing.
+5. **Read the "needs attention" text against the data** in the default state and at least one filter state: every number matches, "improved" and "worsened" agree with polarity, every stated cause appears in the inputs, and no off-track item is missing.
 6. **States**: force at least the empty, stale and no-target cases once and compare what appears with section 9.
 7. **One-minute test** (section 1, step 9) on the desktop screenshot.
 
@@ -214,8 +216,8 @@ Page 1 wireframe (adapt it, keep it to one screen):
 ├───────────┬───────────┬───────────┬───────────┬───────────┬──────────┤
 │ KPI 1     │ KPI 2     │ KPI 3     │ KPI 4     │ KPI 5     │ KPI 6    │
 ├───────────┴───────────┴───────────┼───────────┴───────────┴──────────┤
-│ Needs attention: 3-5 ranked       │ Gap to target by channel/region  │
-│ sentences with owner, next step   │ (variance bars, sorted by gap)   │
+│ Needs attention: ranked items,    │ Gap to target by channel/region  │
+│ owner, next step; "+n more"       │ (variance bars, sorted by gap)   │
 ├───────────────────────────────────┴──────────────────────────────────┤
 │ Drivers: inputs vs target (bullet graphs) → drill-through to page 2  │
 └──────────────────────────────────────────────────────────────────────┘
@@ -232,9 +234,11 @@ Before delivery, run `python3 ${CLAUDE_SKILL_DIR}/scripts/numbers_check.py trace
 
 ## Evidence notes
 
-- Genre before layout; named patterns for metadata (source, definitions, disclaimer, update date), explicit thresholds, screenfit and detail on demand: Bach et al., "Dashboard Design Patterns", IEEE TVCG 29(1), 2023 (arXiv 2205.00757), and the authors' pattern catalogue. It catalogues practice; it does not show that the patterns improve decisions.
-- Bullet graph as a gauge replacement: Few's design, via the Wikipedia "Bullet graph" article (secondary). One eye-tracking study (Wu et al., Springer, 2019; 40 participants) reports more efficient reading than gauges, measured as time to first fixation, not accuracy.
-- Controllable inputs vs outputs, a fixed format each period, targets only where they exist, growth beside absolute values, prior year faded: Commoncog, "The Amazon Weekly Business Review" (practitioner account of one company).
-- Alert limits: Ancker et al., BMC Medical Informatics and Decision Making 17:36, 2017. Each additional reminder per encounter was associated with 30% lower acceptance, and repeated reminders also lowered acceptance. Clinical setting; the transfer to KPI alerts is an inference.
-- Watermelon reporting: practitioner guidance only (Pragmatic Coders, 2026), with no outcome data; the component-status rule is a design choice. Guardrail metrics: Manheim and Garrabrant, "Categorizing Variants of Goodhart's Law", arXiv 1803.04585 (conceptual).
-- Color and contrast: W3C, Understanding WCAG 2.1 SC 1.4.1 Use of Color and SC 1.4.11 Non-text Contrast (3:1). Angle and area are judged less accurately than position and length (Heer and Bostock, CHI 2010), hence no gauges or donuts for comparison. Absolute and relative variance side by side: IBCS example in Lapajne, AFP Exchange, November 2015.
+- Genre before layout, metadata patterns (source, definitions, disclaimer, update date), explicit thresholds, screenfit, detail on demand: Bach et al., "Dashboard Design Patterns", IEEE TVCG 29(1), 2023 (arXiv 2205.00757), and the authors' pattern catalogue. They catalogue practice; they do not show that the patterns improve decisions. One screen for monitoring: Few, "Dashboard Confusion", Intelligent Enterprise, 2004 (a dashboard shows the most important information on a single screen, monitored at a glance).
+- Bullet graph as a gauge replacement: partially supported. Few's design is known here only through the Wikipedia "Bullet graph" article; his specification was not read. One eye-tracking study (Wu et al., Springer, 2019; 40 participants) reports more efficient reading than gauges, measured as time to first fixation; it reports no accuracy or comprehension result.
+- Inputs vs outputs, a fixed format, targets only where they exist, growth beside absolute values: Commoncog, "The Amazon Weekly Business Review", 2024. It is a secondary account of one company, and its graph format is one option, not a rule. Leading vs lagging: Kaplan and Norton, Harvard Business Review, 1992; paywalled, so only its premise that financial measures alone can give misleading signals was confirmed.
+- Alert rules are heuristics. Ancker et al., BMC Medical Informatics and Decision Making 17:36, 2017: in clinical decision support, each additional reminder per encounter was associated with 30% lower acceptance, and repeated reminders also lowered acceptance. Applying this to KPI flags is an inference, not a tested finding.
+- Variance explanation: SEC Regulation S-K Item 303 (17 CFR 229.303) asks registrants to attribute material revenue changes to price, volume or new products. The discussion must not merely repeat financial-statement numbers. It anchors the decomposition rule; it is not a requirement for internal dashboards. The event, cause, action commentary format is practitioner convention (the vendor guides were not read).
+- Status: no source gives numeric RAG tolerances or a cap on KPI or flag counts, hence the never-invent rule. Watermelon reporting: practitioner guidance only (Pragmatic Coders, 2026), with no outcome data; the component-status rule is a design choice. Guardrail metrics: Manheim and Garrabrant, "Categorizing Variants of Goodhart's Law", arXiv 1803.04585 (conceptual; the pairing is an inference).
+- Numbers in code, checked independently: FinanceBench (arXiv 2311.11944, 2023) found GPT-4-Turbo with retrieval answered incorrectly or refused 81% of a 150-question sample about public-company filings. These are 2023 models on a question-answering task: a reason to check, not a current error rate.
+- Color and contrast: W3C, Understanding WCAG SC 1.4.1 Use of Color and SC 1.4.11 Non-text Contrast (3:1). Angle and area are judged less accurately than position and length (Heer and Bostock, CHI 2010), hence no gauges or donuts for comparison. Absolute and relative variance side by side: IBCS example in Lapajne, AFP Exchange, November 2015.

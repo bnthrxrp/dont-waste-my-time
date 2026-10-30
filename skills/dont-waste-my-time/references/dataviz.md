@@ -24,9 +24,9 @@ Start from the reader's question, then pick the form.
 |---|---|---|
 | How do categories compare? | Bars sorted by value unless the categories have an inherent order (time, funnel stage, size band); horizontal when labels are long; zero baseline; direct value labels; "Other" last | Pies, bubbles, alphabetical order when the order isn't the point |
 | How did it change over time? | Line for many periods or a trend; columns for a few discrete periods whose amounts are the message | Unevenly spaced periods on an even axis; bars for long series |
-| What share of the whole? | Sorted bars of shares; one 100% stacked bar per whole to compare 2-3 wholes; pie or donut only for 2-3 labeled slices | Pies with more slices; several pies side by side; exploded, nested or 3D pies |
+| What share of the whole? | Sorted bars of shares; one 100% stacked bar per whole to compare 2-3 wholes; pie or donut only for 2-3 labeled slices that sum to a stated whole (heuristic) | Pies with more slices; several pies side by side; exploded, nested or 3D pies |
 | How are values spread? | Histogram; box or strip plot to compare groups; n shown | A bar of the mean alone, which hides the spread |
-| How do two measures relate? | Scatter with units on both axes, outliers labeled, trend line only if the relationship is the message | Two lines on dual axes; causal wording in the title |
+| How do two measures relate? | Scatter with units on both axes, outliers labeled, trend line only if the relationship is the message | Two lines on dual axes as evidence of a relationship; causal wording in the title |
 | Actual vs target or plan? | Actual bar with a target marker (bullet), or variance bars; KPI tile: value, Δ vs comparison with sign, optional sparkline | Gauges, dials, traffic lights without the number |
 | What drove the change from A to B? | Waterfall (bridge): start total, drivers sorted by size or by logic (price, volume, mix, FX), end total; reconciles exactly | Two totals with no drivers; stacked bars |
 | Who ranks where? | Sorted horizontal bars or dot plot; top N + "Other"; slope chart for rank change between two periods | Unsorted bars; a full league table on a slide |
@@ -36,25 +36,25 @@ Start from the reader's question, then pick the form.
 
 ## Encoding priorities
 
-Magnitude judgments, most to least accurate: **position on a common scale > position on non-aligned scales > length > angle and area > color intensity**. Put the most important quantity on the most accurate channel.
+For magnitude judgments, **position on a common scale is the most accurate**, followed by position on non-aligned scales and length. Angle has not been shown to be worse than length, but angle and area are both clearly worse than position, and area is worse than angle. Color intensity is a pattern cue, not a reading cue. Put the most important quantity on position.
 
 - Put the comparison the decision depends on along one shared axis: bars or dots from a common baseline, next to each other.
 - In stacked bars only the bottom segment and the total share a baseline. If readers must compare a middle segment across bars, unstack it (grouped bars or small multiples) or label every segment.
-- Angle and area (pies, bubbles, treemaps, gauges) give an impression, not a reading: label the values whenever they matter. Angle alone is the weakest pie cue; a donut reads as accurately as a pie.
+- Angle and area (pies, bubbles, treemaps, gauges) give an impression, not a reading: label the values whenever they matter. Angle alone is the weakest pie cue, so avoid angle-only designs; a donut is neither better nor worse than a pie.
 - Color intensity (heatmaps, shaded maps) shows pattern, not value: print the numbers in the cells or provide the table.
 - Comparing values across subsets is slow and loads working memory. Place compared items side by side on one axis, keep one main comparison per chart, and state the result in the title.
 - Two series with close values over a short span: overlay them in one panel. Many series or a wide span: small multiples.
-- Use conventional forms; an unfamiliar chart costs decoding time before it delivers anything.
+- Use conventional forms; an unfamiliar chart costs decoding time before it delivers anything. If a less familiar form is needed (a slope chart, or a waterfall for non-finance readers), add a one-line "how to read". Never pick a form for novelty or memorability.
 
 ## Integrity rules
 
 Breaking a **Hard** rule makes the chart misleading, a blocking defect at the quality gate.
 
-- **Hard: bars and columns start at zero.** Bar length must stay proportional to value; the exaggeration persists even when the truncation is flagged. If zero hides the difference that matters, a bar is the wrong form: switch to dots or a line with a labeled range, or plot the differences (variance bars) directly. Never break a bar axis.
+- **Hard: bars and columns start at zero**, stacked ones included. Bar length must stay proportional to value, and the exaggeration persists even when the truncation is flagged, so an axis break doesn't fix it. If the differences that matter are small relative to the values, print the delta (absolute and %) on the chart, switch to dots or a line with a labeled range, or plot the differences (variance bars). Never break a bar axis.
 - **Line and dot charts may zoom**: print the axis range, label the start and end values, and state the change in numbers in the title or an annotation. Set the range from the size of change that matters to the decision, not from the software's autoscale: a noise-level move must not look dramatic, and a forced zero must not flatten a material trend.
 - **Hard: no 3D**, perspective or shadows on data marks.
-- **Avoid dual y-axes.** Use indexed lines (base period = 100, absolute values labeled at the endpoints) or two aligned panels sharing the x-axis. If the user insists: color each axis like its series, label both units, keep a bar axis at zero, and give the crossing points no meaning.
-- **Hard: one scale across small multiples** and across charts placed side by side for comparison. If scales must differ because shape matters more than size, write "scales differ" in the subtitle.
+- **Dual y-axes: avoid by default.** Use two aligned panels sharing the x-axis, or indexed lines (base period = 100, with absolute values labeled at the endpoints, because indexing hides levels). Allow a dual axis only when the question is the timing of two series in different units (when each peaked or turned) and both levels must stay visible. Then put units on both axes, color each axis like its series, label the series directly, keep a bar axis at zero, and draw no claim from where the lines cross or how close they run: the axis scaling sets that arbitrarily. Never use one for series that share a unit.
+- **Hard: one scale across small multiples** and across any charts the reader is meant to compare, on one slide or across slides. If scales must differ because shape matters more than size, write "scales differ" in the subtitle.
 - **Hard: time is proportional.** Equal intervals get equal spacing; space irregular dates by date or mark the gap; never mix months and quarters on one axis. Label partial periods ("Oct MTD", "YTD to 15 Oct") and never set them against full periods unlabeled.
 - **Hard: label cumulative vs period values** ("YTD", "cumulative", "per month") in the subtitle or axis title. A cumulative line rises whenever flows are positive; never present that rise as momentum.
 - **Show n** when a share or average rests on a small or unequal base ("n = 37 stores"). Below about 20 observations, show counts ("7 of 18"), not percentages (heuristic).
@@ -63,16 +63,16 @@ Breaking a **Hard** rule makes the chart misleading, a blocking defect at the qu
 
 ## Titles and annotation
 
-- **Title**: the takeaway as a sentence with the number ("Price drove all of the +4.0% growth; volume fell 3.1%").
-- **Subtitle**: what is measured: metric, unit, period, scope, basis ("Net revenue, € M, FY22-FY25, Europe, constant currency").
+- **Title**: the finding as a sentence: metric, direction, magnitude and comparison base ("Gross margin fell 2.1 pp vs plan in Q3"). Keep chart titles to findings; a recommendation goes in the slide headline or text, labeled as such.
+- **Subtitle**: what is measured: metric, unit, period, scope, basis ("Net revenue, € M, FY22-FY25, Europe, constant currency"). For indexed, adjusted or derived series, add the base period or method.
 - **Faithfulness test.** Readers take the title as the chart's message and tend to assume charts are neutral, so the title must not outrun the data. Check that:
   1. every claim in the title is visible in the chart, or labeled as interpretation;
-  2. the title doesn't upgrade the evidence: no causation from co-movement, no "trend" from two points, no "record" without the history shown, no evaluative adjectives;
+  2. the title doesn't upgrade the evidence: no causation from co-movement, no "trend" from two points, no "record" without the history shown, no loaded words (alarming, disappointing, healthy);
   3. a reader who disagrees with the recommendation would read the same fact from title and chart.
 - **Make the chart say what the title says.** The accent color, annotation or most prominent mark sits on the feature the title names. Words don't beat a stronger visual pattern: if the chart's dominant pattern differs from the message, redesign it (highlight, reorder, re-baseline, split), don't add text.
 - **Declutter, then focus.** Remove non-critical gridlines, redundant labels and extra colors; then add one accent and one or two annotations at the data, giving value and reason ("Plant B outage, −1.2 kt"). Decluttering alone looks professional; the focus is what carries the message.
 - **Direct labels over legends.** Label line ends and the bars that matter. Keep a legend only when marks are too many or too small to label, and order it like the data. Label the values the message needs, not every point.
-- **Axes**: unit in the axis title or tick labels (€ M, %, pp, days). Drop a value axis when every bar is labeled.
+- **Axes**: unit in the axis title or tick labels (€ M, %, pp, days). With about 12 bars or fewer, label every bar and drop the value axis (heuristic).
 - **Source line** under every chart: source, extract date or version, n, definitions, and estimate markers ("Source: ERP sales ledger, extract of 3 Oct; FY plan v3. n = 412 outlets. E = estimate").
 
 ## Color
@@ -87,13 +87,17 @@ Default to grey plus one accent on what the title names. Add a color only when i
 | Unfavorable | vermilion #D55E00 | 3.9:1 |
 | Gridlines (decorative) | #D9D9D9 | n/a |
 | Primary text | #222222 | 15.9:1 |
-| Secondary text (subtitle, axes, source) | #595959; never lighter than #767676 | 7.0:1 (#767676: 4.5:1) |
+| Secondary text (subtitle, axes, source) | #595959; on white never lighter than #767676 | 7.0:1 (#767676: 4.5:1) |
 
 - **Semantic color follows business meaning and metric polarity, not direction.** Cost +5% vs plan is unfavorable; churn −1 pp is favorable. Once a color means something, it means it everywhere in the deliverable: never reuse the favorable or unfavorable color as a neutral accent or a category. Keep one color per entity (product, region) across all charts.
-- **Hard: never encode meaning by color alone.** Pair it with a sign (+/−), label, icon (▲▼), position (left or right of zero) or pattern. Never rely on red vs green: about 8% of men have some color-vision deficiency, and red-green deficiency makes the two nearly indistinguishable. The pair above stays distinct under simulated deficiency; a typical red/green pair does not.
-- **Categorical palette (Okabe-Ito)**, in order of use on white: blue #0072B2, reddish purple #CC79A7, black #000000, vermilion #D55E00, bluish green #009E73 (all ≥ 3:1). Orange #E69F00 and sky blue #56B4E9 (2.3:1) need a dark outline or a dark background; yellow #F0E442 (1.3:1) never on white. When polarity colors are in use, drop vermilion and bluish green from the categorical set. On a dark background recompute: #0072B2 falls to 3.2:1 on #1E1E1E, while orange and sky blue exceed 7:1.
-- **At most 6-7 categorical colors per chart.** Beyond that, group the tail into "Other", split into small multiples, or use direct labels in one color.
-- **Hard: contrast ≥ 3:1** for every graphical object the reader needs (bars, lines, markers, segment boundaries) against adjacent colors, and **≥ 4.5:1 for text** (3:1 for large text: 18 pt, or 14 pt bold). So write data labels in #222222, not in the series color, unless that color reaches 4.5:1: #0072B2 does; #009E73, #D55E00 and #8C8C8C don't.
+- **Hard: never encode meaning by color alone.** Pair it with a sign (+/−), label, icon (▲▼), position (left or right of zero) or pattern. A color whose meaning is the color itself (green = good) always needs that second cue. Never rely on red vs green: roughly 5-8% of men (depending on ancestry) have some color-vision deficiency, and red-green deficiency makes the two nearly indistinguishable. The pair above stays distinct under simulated deficiency; a typical red/green pair does not. Test: the chart still reads correctly in grayscale.
+- **Categorical palette (Okabe-Ito)**, in order of use on white: blue #0072B2, reddish purple #CC79A7, black #000000, vermilion #D55E00, bluish green #009E73 (all ≥ 3:1). Orange #E69F00 and sky blue #56B4E9 (2.3:1) need a dark outline or a dark background; yellow #F0E442 (1.3:1) never on white. When polarity colors are in use, drop vermilion and bluish green from the categorical set. If the brand supplies a palette, keep it and run the color-alone and contrast rules against it.
+- **Recompute contrast on any non-white background.** On a light-grey panel (#F5F5F5), #767676 text drops to 4.2:1 and fails, and reddish purple drops to 2.8:1. On dark (#1E1E1E), #0072B2 falls to 3.2:1, while orange and sky blue exceed 7:1.
+- **At most 6-7 categorical colors per chart (heuristic).** Beyond that, group the tail into "Other", split into small multiples, or use direct labels in one color.
+- **Hard: contrast ≥ 3:1** for every graphical object the reader needs (bars, lines, markers) against the background, and **≥ 4.5:1 for text** (3:1 for large text: 18 pt, or 14 pt bold). Thresholds are not rounded: 4.49:1 fails. A mark is exempt when its value is printed beside it in text that passes; decorative gridlines are exempt.
+  - Palette colors don't contrast with each other (blue vs vermilion is 1.3:1): separate adjacent segments with a thin white gap.
+  - Thin lines and small markers look fainter than their nominal contrast: give them the darker colors (blue, vermilion, black), never sky blue, orange or yellow.
+  - Write data labels in #222222, not in the series color, unless that color reaches 4.5:1: #0072B2 does on white; #009E73, #D55E00 and #8C8C8C don't.
 - Ordered values (low to high): one hue, light to dark. Values around a meaningful midpoint (zero, target, average): two hues diverging from a neutral color at that midpoint. Never a rainbow scale.
 
 ## Uncertainty and forecasts

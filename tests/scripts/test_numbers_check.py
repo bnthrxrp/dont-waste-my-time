@@ -288,7 +288,7 @@ class Trace(TempFiles):
         self.assertIn("derived", " ".join(result["notes"]))
 
     def test_years_ignored_by_default_and_checked_on_request(self):
-        text = "In 2027 we plan to grow. Q4 2027 and March 2027 matter. 86.2 is fine."
+        text = "In 2027 we plan to grow. Q4 2027 and March 2027 matter. $86.2M is fine."
         self.assertEqual(self.untraced(text), [])
         self.assertEqual(self.untraced(text, ignore_years=True), [])
         raw = [u["raw"] for u in self.trace(text, self.SOURCE, ignore_years=False)["untraced"]]

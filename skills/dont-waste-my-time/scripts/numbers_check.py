@@ -57,6 +57,18 @@ untraced: verify them, do not delete them. When an untraced number can be reprod
 two other numbers in the same sentence/row, the report says how (possible basis).
 By default bare years, year-month dates and quarter labels are ignored (--include-years
 to check them too); full dates are always checked.
+
+trace matching is deliberately strict. A number is TRACED when a source number has the same kind,
+unit and currency and agrees to the rounding of the less precise one (whole numbers below 10 must be
+identical). It is LOOSELY traced, and listed for you to verify, only by relaxing exactly one thing
+and never with rounding: (a) the source is a bare number with no unit of its own (a table cell such
+as "412.6" under a "$M" header) and the deliverable is a plain or currency number with identical
+digits after a 10^3/10^6 shift ("$412.6M"); or (b) same unit and digits, opposite sign. A number
+followed by a unit word ("6 weeks") is not bare. Numbers never match across different explicit
+units, and whole numbers below 10 are never matched loosely. "[TBD: ...]" placeholders are ignored;
+bare bracketed values ("[45]", "[$X M]") are listed separately because placeholders should not carry
+numbers. YAML front matter in markdown files is ignored. The RESULT line gives three counts: traced,
+loosely traced (verify), untraced.
 """
 from __future__ import annotations
 
@@ -203,7 +215,7 @@ _BRACKETED_VALUE_RE = re.compile(
 # The word right after a number ("6 weeks", "41,300 tonnes") is its unit. Only a word separated by plain
 # spaces counts (not across punctuation), and connectors are skipped ("12 of ...", "3 in Q3" has none).
 _CONNECTORS = r"(?:of|de|do|da|dos|das|in|em|to|a|the|and|e|vs|by|at|for|com|with|on)"
-_UNIT_WORD_RE = re.compile(rf"[ \t]+(?:{_CONNECTORS}[ \t]+)?(?!{_CONNECTORS}\b)([^\W\d_]{{2,}})", re.I)
+_UNIT_WORD_RE = re.compile(rf"[ \t]+(?:{_CONNECTORS}[ \t]+)*(?!{_CONNECTORS}\b)([^\W\d_]{{2,}})", re.I)
 
 _TIME_RE = re.compile(r"(?<![\w:.])([01]?\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?(?![\w:])")
 _FY_RE = re.compile(r"(?<![\w])FY\s?['’]?(\d{4}|\d{2})(?![\w])", re.I)
@@ -1088,7 +1100,8 @@ def trace_docs(deliverable: Doc, sources: list[Doc], ignore_years: bool = True) 
         "bracketed_values": deliverable.bracketed,
         "sources": [{"file": d.path.as_posix(), "number_format": d.locale, "numbers": len(d.tokens)} for d in sources],
         "summary": {"numbers_checked": len(considered), "traced": traced_exact, "traced_loosely": traced_loose,
-                    "untraced": len(untraced), "ignored_period_labels": len(deliverable.tokens) - len(considered)},
+                    "untraced": len(untraced), "ignored_period_labels": len(deliverable.tokens) - len(considered),
+                    "bracketed_values": len(deliverable.bracketed)},
         "untraced_by_location": by_location,
         "untraced": [item for items in by_location.values() for item in items],
         "traced_loosely": loose,
@@ -1105,9 +1118,11 @@ def render_trace(result: dict) -> str:
     lines = ["numbers_check trace",
              f"  deliverable: {result['deliverable']['file']}  ({result['deliverable']['number_format']} number format)",
              "  sources:     " + ", ".join(f"{d['file']} ({d['numbers']} numbers)" for d in result["sources"]), ""]
-    lines.append(f"RESULT: {s['untraced']} of {s['numbers_checked']} numbers in the deliverable match no source "
-                 f"({s['traced']} traced exactly, {s['traced_loosely']} traced ignoring unit/sign/scale"
-                 + (f"; {s['ignored_period_labels']} year/quarter labels ignored" if s["ignored_period_labels"] else "") + ").")
+    lines.append(f"RESULT: {s['traced']} traced, {s['traced_loosely']} loosely traced (verify), {s['untraced']} untraced"
+                 f"  (of {s['numbers_checked']} numbers checked"
+                 + (f"; {s['ignored_period_labels']} year/quarter labels ignored" if s["ignored_period_labels"] else "")
+                 + (f"; {s['bracketed_values']} bracketed placeholder values set aside" if s["bracketed_values"] else "")
+                 + ").")
     for location, items in result["untraced_by_location"].items():
         lines.extend(["", location])
         for item in items:
@@ -1116,15 +1131,20 @@ def render_trace(result: dict) -> str:
             if item.get("possible_basis"):
                 lines.append(f"      possible basis (verify, then label it as derived): {item['possible_basis']}")
     if result["traced_loosely"]:
-        # A loose match can be a coincidence (a derived "-10.9%" equals an unrelated "10.9 kt"), so show them.
-        lines.extend(["", f"Loosely traced ({len(result['traced_loosely'])}): matched a source number only after ignoring "
-                          "unit, sign or a 10^3 scale shift. Check each is really the same quantity:"])
+        # A loose match can still be a coincidence, so every one is listed for a human to confirm.
+        lines.extend(["", f"Loosely traced ({len(result['traced_loosely'])}): matched a source number by relaxing exactly one "
+                          "thing (a scale shift against a bare source number, or a sign). Confirm each is the same quantity:"])
         for entry in result["traced_loosely"][:MAX_LOOSE_LISTED]:
             number = entry["number"]
             lines.append(f"  - {number['raw']!r} at {number['location']}  ~  {entry['source_number']!r} at "
                          f"{entry['source_location']}  ({entry['matched_via']})")
         if len(result["traced_loosely"]) > MAX_LOOSE_LISTED:
             lines.append(f"  ... {len(result['traced_loosely']) - MAX_LOOSE_LISTED} more (see --json)")
+    if result["bracketed_values"]:
+        lines.extend(["", f"Bracketed values ({len(result['bracketed_values'])}): placeholders should not carry numbers; "
+                          "use [TBD: what, owner]. (Ignore this if the brackets are citation numbers.)"])
+        for item in result["bracketed_values"]:
+            lines.append(f"  - {item['raw']}  at {item['location']}: {item['snippet']}")
     lines.extend(["", "Notes"] + [f"  - {n}" for n in result["notes"]])
     return "\n".join(lines)
 
@@ -1181,8 +1201,8 @@ def main(argv: list[str] | None = None) -> int:
                         + result["summary"]["matched_with_differences"])
             text = render_compare(result)
         else:
-            deliverable = load_doc(Path(args.deliverable), args.deliverable_locale)
-            sources = [load_doc(Path(p), args.source_locale) for p in args.sources]
+            deliverable = load_doc(Path(args.deliverable), args.deliverable_locale, placeholders_aside=True)
+            sources = [load_doc(Path(p), args.source_locale, placeholders_aside=True) for p in args.sources]
             result = trace_docs(deliverable, sources, ignore_years=not args.include_years)
             problems = result["summary"]["untraced"]
             text = render_trace(result)
