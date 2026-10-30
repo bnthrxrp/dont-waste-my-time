@@ -175,7 +175,7 @@ _REFERENCE_RE = re.compile(
 )
 # Outline numbering at the start of a line: "1. Intro", "2) Next", "### 3. Market", "4.2 Pricing".
 _LIST_NUMBER_RE = re.compile(
-    r"(?m)^[ \t]*(?:#{1,6}[ \t]+)?(?:[-*+•][ \t]+)?"
+    r"(?m)^[ \t]*(?:#{1,6}[ \t]+)?(?:[-*+•][ \t]+)?(?:\*\*|__)?"
     r"(?P<num>\(?\d{1,3}[.)][ \t]+(?=\S)|\d{1,2}(?:\.\d{1,2})+\.?[ \t]+(?=[A-ZÀ-Ý][a-zà-ÿ])"
     r"(?!(?:Million|Billion|Thousand|Milh|Bilh|Mil\b|Mi\b|Bi\b|Tri\b)))"
 )
@@ -283,6 +283,7 @@ class Token:
     scale: int = 1                  # multiplier written with the number (10^6 for "mi"/"M")
     shown: Decimal = Decimal(0)     # the number as written, before scale/sign (48.7 for "R$ 48,7 mi")
     unit_word: str = ""             # word that follows ("weeks", "tonnes"): the number has an explicit unit
+    end: int = 0                    # end offset in the text it was read from
 
     @property
     def is_numeric(self) -> bool:
@@ -512,7 +513,7 @@ def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = Non
         word = _UNIT_WORD_RE.match(text, end) if kind == "number" else None
         tokens.append(Token(kind, value, step, unit, currency, text[start:end].strip(), location,
                             snippet(start, end), style, unit_index, start=start, scale=scale, shown=shown,
-                            unit_word=word.group(1).lower() if word else ""))
+                            unit_word=word.group(1).lower() if word else "", end=end))
 
     # 1. quarters (before dates and numbers so "3T25" and "Q3 2025" are not split)
     for pattern, build in _QUARTER_PATTERNS:
@@ -610,7 +611,24 @@ def tokenize(text: str, locale: str, machine_spans: list[list[int]] | None = Non
              scale_mult, parsed.value)
 
     tokens.sort(key=lambda t: t.start)
+    _share_range_suffix(tokens, text)
     return tokens
+
+
+_RANGE_JOINER = re.compile(r"^\s*(?:-|to|a|até)\s*$", re.I)
+
+
+def _share_range_suffix(tokens: list[Token], text: str) -> None:
+    """In "$6-14M" or "20-25%" the scale/percent/currency written once on the second number applies to the first."""
+    for first, second in zip(tokens, tokens[1:]):
+        if first.kind != "number" or second.kind != "number" or not _RANGE_JOINER.match(text[first.end:second.start]):
+            continue
+        if first.scale == 1 and second.scale != 1:
+            first.value, first.step, first.scale = first.value * second.scale, first.step * second.scale, second.scale
+        if not first.unit and second.unit in ("%", "x"):
+            first.unit = second.unit
+        if not first.currency and second.currency:
+            first.currency = second.currency
 
 
 # ---------------------------------------------------------------------------
