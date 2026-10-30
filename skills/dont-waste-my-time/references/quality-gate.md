@@ -82,6 +82,7 @@ If the tier rises mid-task, the gate rises with it.
 | Consistency | Search the extracted text (`doc_text.py`) for each headline number and metric. | The same quantity differs in value, unit, rounding or period anywhere (summary, slide, chart, table, notes, appendix) → make it identical or explain the difference. |
 | Generic sentence | Ask of each sentence: could it appear unchanged in another company's document? | Yes → make it specific (names, numbers, dates) or cut it. |
 | Delete test | For each slide or section, state what the reader loses if it disappears. | Nothing that changes understanding or the decision → delete it or move it to the appendix. |
+| Summary trace | For a summary of long or multiple source documents, trace every sentence to a source passage, starting with the final third (unsupported content tends to cluster late). | A sentence without a supporting passage → delete it or flag it as interpretation. |
 
 ## 4. Rubric (High-stakes)
 
@@ -170,6 +171,8 @@ Do not rewrite the deliverable, do not edit any file, and do not praise it.
 Triage every finding. Valid and material: fix it. Valid and minor: fix it if cheap. Out of scope or a matter of taste: drop it. Before dismissing a flagged number, check it against the source. Then re-run the checks your fixes affect (`numbers_check.py` after a number changes, `render.py` after a layout change) and re-score. Don't pass the reviewer's report to the user; carry only unresolved material findings into the final message.
 
 If no agent tool is available, do a fresh-eyes pass yourself: work from the rendered images and extracted text, not your draft; run the hostile-reader test top to bottom; list the five most important problems; fix them. Don't call this an independent review.
+
+Self-review, and even an agent reviewer, is a floor, not sign-off. For board, client-facing or regulated deliverables, recommend in the final message that a named person checks the figures and citations before release, and name the 3-5 items to check first. Whether AI use must be disclosed is the user's call: raise it only if the context suggests it matters (a client contract, a regulator).
 
 ## 9. Final-message honesty
 

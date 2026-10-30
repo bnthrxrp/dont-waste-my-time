@@ -56,9 +56,12 @@ Before producing anything, write for yourself:
 
 Use the lightest method that solves the problem. Don't force a consulting framework onto a simple task.
 
+- **Match depth to the decision's stakes.** A consequential decision (irreversible or costly to reverse, material spend or headcount, cross-unit, recurring) gets real alternatives on the same criteria, the downside, owners and dates. A routine one gets a short statement: the ask, the reason, one alternative or the status quo, and the main risk.
+- **Name the form before the layout**: pre-read or presented deck; monitoring or analytical dashboard; faithful translation or adaptation. It changes density, structure and what goes in notes.
+
 ## 4. Executive communication rules (always)
 
-- **Answer first.** The first screen, first slide after the title, or first paragraph carries the conclusion, why it matters, and what is needed from the reader. Background comes later, if at all.
+- **Answer first.** The first screen, first slide after the title, or first paragraph carries the conclusion, why it matters, and what is needed from the reader: the decision requested, who decides, and by when. Label it Decision, Discussion or Information. Background comes later, if at all; at most three sentences of situation first, when the reader can't accept the answer without them.
 - **Takeaway titles.** Headings, slide titles and chart titles state the "so what" as a full sentence ("Price drove all of the +4.0% growth; volume fell 3.1%"), not a topic ("Sales overview").
 - **One message per unit.** Each slide, section, chart or KPI tile has one job in the argument. Cut or merge anything that repeats an established point without adding a new purpose.
 - **So-what test.** Every significant statement answers at least one of: what changed, why, what it means, what the risk or opportunity is, what to do, what to decide. If none, cut it or make it answer one.
@@ -74,7 +77,10 @@ Use the lightest method that solves the problem. Don't force a consulting framew
 - **Never fabricate** statistics, sources, quotes, benchmarks, company practices, financials, targets or data points. This includes "illustrative" numbers that a reader could mistake for real ones. Never invent process facts either: who was consulted, who agreed or dissented, which reviews or approvals happened, or what a named person said. Templates that ask for them get a placeholder.
 - **Label the status** of material claims when it isn't obvious: verified fact (with source), source-reported, calculated (show the formula or basis), estimate, assumption, hypothesis, recommendation, unknown.
 - **Missing data**: if it would change the conclusion, ask one targeted question; otherwise proceed with a visible placeholder such as `[TBD: FY27 cost per KAM, owner: Finance]`, highlighted in files, and list it in your final message. Never fill a gap silently, and never let a total silently include missing parts.
-- **Traceability**: every number in a deliverable either appears in the sources or is a calculation whose basis is shown. Run `numbers_check.py trace` before delivery (section 8).
+- **Traceability**: every number in a deliverable either appears in the sources or is a calculation whose basis is shown. Every figure-bearing page, chart or table carries a source line with an as-of date. Run `numbers_check.py trace` before delivery (section 8).
+- **Compute with tools, not prose**: totals, variances, growth rates, shares and CAGRs come from code or a spreadsheet, and each total reconciles to its source.
+- **No invented causes or inputs**: explain why a number moved only when the cause is in the user's material or a source you opened. Otherwise write "cause not provided" or label it a hypothesis. Never invent targets, tolerances, thresholds or owners: write "No target" or `[TBD: ..., owner]`.
+- **Basis note**: a consequential recommendation ends with one to three lines naming the sources used, the key assumptions, and what is unverified.
 - **Sources**: cite only what you actually opened in this session, with title, publisher, date and URL; cite the page that states the claim, not a search result. Say when evidence is old, secondary, self-reported or contested.
 - **The user's material**: when you find inconsistencies, errors or unsupported claims, flag them. Never silently "fix" a number or carry an unsupported claim forward as fact.
 
@@ -89,7 +95,7 @@ Read only the references the task needs. Each one holds the detailed procedure, 
 | Report, memo, business review, business case | [writing.md](references/writing.md), [analysis.md](references/analysis.md) | Central conclusion first → drivers and evidence → implications and actions → caveats. |
 | Research-driven recommendation | [research.md](references/research.md), [analysis.md](references/analysis.md) | Scope the question → decide whether fresh research is needed → gather and verify sources → synthesize → conclusion with facts, interpretation and uncertainty separated. |
 | Translation / localization | [translation.md](references/translation.md) | Preserve meaning, numbers, caveats and logic → adapt terms and conventions → keep the file format and layout → verify numbers and terminology → flag ambiguities. |
-| Improving existing material | the reference for its type | Inspect the real file → diagnose message, audience fit, logic, evidence, density, hierarchy and visuals → prioritize by impact → **implement the changes** (not just advice) → short change log → compare against the objective. |
+| Improving existing material | the reference for its type | Inspect the real file → diagnose message, audience fit, logic, evidence, density, hierarchy and visuals → mark every section or slide keep, cut or merge, with a reason (editors add by default; subtract on purpose) → **implement the changes** (not just advice) → short change log of what moved, was cut or was flagged → compare against the objective. |
 
 Whenever you produce or change a file (pptx, docx, xlsx, html, pdf), deliver the actual file. An outline is not a finished deck. Save deliverables in the user's working directory, or wherever the user asked, next to the inputs; scratch or temp folders are for intermediate files only. Never overwrite the user's original. Write the result as a new file, e.g. `<name>_EN.pptx` or `<name>_v2.pptx`.
 
