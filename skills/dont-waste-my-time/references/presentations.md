@@ -1,6 +1,6 @@
 # Presentations
 
-Read this when building, restructuring or improving a deck. Chart choice, baselines, labels and chart color live in dataviz.md. Profiles and slide-count budgets live in briefing.md: the main body stays within the budget, and the rest goes to the appendix.
+Read this when building, restructuring or improving a deck. Chart choice, baselines, labels and chart color live in dataviz.md; keep charts native and editable. Profiles and slide-count budgets live in briefing.md: the main body stays within the budget, and the rest goes to the appendix.
 
 ## Contents
 - Workflow (including the format decision)
@@ -25,14 +25,13 @@ Read this when building, restructuring or improving a deck. Chart choice, baseli
    | 3 | Price drove all of the +4.0% growth; volume fell 3.1% | Reason 1 for the recommendation | sales_2026.xlsx, tab Bridge | Price-volume bridge, price bar highlighted |
 
 4. **Build the real file** (Production paths). An outline or a plan is not a deck.
-5. **Render and inspect** every slide, then run the checks (QA).
-6. **Fix**, re-render the changed slides, and do the titles-only read on the final file.
+5. **Render, inspect and fix** (QA), then do the titles-only read on the final file.
 
 Keep the ghost deck and plan internal and continue in the same turn. Show them and wait only when the user asked to review the outline first, or when the storyline turns on a choice only the user can make (which option to recommend, what can be said to this audience).
 
 ### Decide the format before the first build
 
-Building in the wrong format and rebuilding doubles the cost of the whole task. Settle the format before writing any slide:
+Settle it before writing any slide; rebuilding in another format doubles the cost of the task.
 
 - The user named a format, supplied a .pptx/.potx or template, or standing defaults set one: use it.
 - Otherwise, if a brief is warranted, include Format in it as one of the constraints, with .pptx as the recommended default. If the host offers its own slide-deck type, list it as an option.
@@ -51,15 +50,16 @@ Pick the pattern that matches the objective. Each arrow is about one slide; drop
 
 ## Slide anatomy
 
-Every content slide has the same parts, in the same positions on every slide:
+Every content slide has these parts, each in the same position throughout the deck:
 
-1. **Takeaway title**: a full sentence that states the so-what, at most 2 lines (about 15 words), with the key number when there is one. Put it in the slide's **title placeholder**, not a free text box: outline view, screen readers and the checks read it there.
+1. **Takeaway title**: a full sentence that states the so-what in factual terms (no "strong" or "disappointing"), at most 2 lines (about 15 words), with the key number when there is one. Put it in the slide's **title placeholder**, not a free text box: outline view, screen readers and the checks read it there.
 2. **Body that proves the title and nothing else**: one main visual or table. Use a second visual only when the comparison between the two is the point.
 3. **Source/notes line** at the bottom: source, period, definitions, and the status of estimates or calculations. Required on every slide with numbers.
 4. **Slide number**, from the layout where the tool allows it.
-5. **Appendix** for everything a reader may ask for but doesn't need to follow the argument: detail tables, breakdowns by unit, method, sensitivities. Appendix slides keep takeaway titles and source lines. Point to them from the main slide ("Detail: A3").
 
-**Placeholders in slides.** Make every `[TBD: what, owner]` visible: bold, in a distinct highlight color, never in the slide master. Never plot a missing value as zero or leave it out of a chart silently: chart the known values and annotate the gap.
+**Appendix** for everything a reader may ask for but doesn't need to follow the argument: detail tables, breakdowns by unit, method, sensitivities. Appendix slides keep takeaway titles and source lines. Point to them from the main slide ("Detail: A3").
+
+**Placeholders in slides.** Make every `[TBD: what, owner]` visible: bold, in a distinct highlight color. Never plot a missing value as zero or leave it out of a chart silently: chart the known values and annotate the gap.
 
 **Density limits** (heuristics; the template, the brief or the audience can override them):
 
@@ -87,7 +87,7 @@ Run both on the ghost deck, then again on the built file.
 
 A title the story needs but no slide supports means a missing slide. A slide whose title adds nothing to the story gets cut or merged.
 
-**Vertical: everything on a slide supports its title.** For each element (chart, bullet, callout, table row, image), ask whether it proves the title. Move or delete what doesn't. Then check the reverse: does the body prove the claim at the stated number, period and scope? If the evidence supports a weaker claim, weaken the title; never stretch the evidence. The most prominent feature of the visual (the highlight, the annotation) must be the thing the title names.
+**Vertical: everything on a slide supports its title.** For each element (chart, bullet, callout, table row, image), ask whether it proves the title. Move or delete what doesn't. Then check the reverse: does the body prove the claim at the stated number, period and scope? If the evidence supports a weaker claim, weaken the title; never stretch the evidence. The most prominent feature of the visual (the highlight, the annotation) must be the thing the title names. A material caveat sits on the slide it qualifies, as a full sentence next to the number, not as a sub-bullet or in the source line.
 
 ## Presented vs pre-read decks
 
@@ -99,9 +99,8 @@ Infer which one from the request ("for the meeting", "to send ahead", "board pac
 | Body | One visual, minimal text | Visual plus 2-4 lines of interpretation; definitions and caveats on the slide |
 | Executive summary | The opening slide carries the answer | A summary slide right after the title: the whole story on one slide |
 | Speaker notes | Required: 3-6 sentences on what to say, the number to stress, the likely question and its answer, the transition | Optional: backup detail, calculation basis, extra sources |
-| Density | Presented limits above | Pre-read limits above |
 
-Don't put the speech on the slide, and don't duplicate on the slide what the speaker will say word for word. In a pre-read, never leave the argument only in the notes: forwarded decks are read without them.
+Slides carry claims and evidence, not the speaker's script: never put on the slide, word for word, what the speaker will say. In a pre-read, never leave the argument only in the notes: forwarded decks are read without them.
 
 ## Visual design defaults
 
@@ -114,7 +113,6 @@ Don't put the speech on the slide, and don't duplicate on the slide what the spe
 - **No decoration that carries no evidence**: no stock photos, decorative icons, clip art, 3D effects, gradients, shadows or title underlines. Where the pptx skill's design ideas (a bold mood palette, icons in circles, a visual on every slide, varied layouts for variety's sake) conflict with this file, this file wins for executive material. A clear claim on a plain slide beats a decorated one; change the layout only when the shape of the content changes.
 - **Numbers**: one unit, precision and format per metric across the whole deck ($86.2M everywhere, not $86M on one slide and 86,200,000 on another). Put units in titles, axis labels or column headers. Write percentage-point changes as pp, not %. Use a minus sign or parentheses for negatives, consistently. Round to what the decision needs, usually 2-3 significant digits. Totals add up as displayed, or a note says they don't because of rounding.
 - **Tables**: about 7 rows × 6 columns at most in the main body. Right-align numbers and highlight the row or column the title is about. Bigger tables go to the appendix.
-- **Charts**: native, editable charts, following dataviz.md (one line here on purpose).
 
 ## Production paths
 
@@ -156,15 +154,12 @@ for n, row in enumerate(plan, start=1):
         t = s.shapes.add_table(len(cells), len(cells[0]), Inches(8.5), Inches(1.5),
                                Inches(4.2), Inches(0.4 * len(cells))).table
         for r, values in enumerate(cells):
-            for c, v in enumerate(values):
-                t.cell(r, c).text = str(v)
+            for c, v in enumerate(values): t.cell(r, c).text = str(v)
     text_box(s, row["source"], 0.6, 6.85, 11.5, 0.35, 10)   # source line
     text_box(s, str(n), 12.4, 6.85, 0.5, 0.35, 10)         # slide number
     s.notes_slide.notes_text_frame.text = row.get("notes", "")
 prs.save("deck.pptx")
 ```
-
-When editing a template with python-pptx, set `run.text` rather than `text_frame.text`, which drops the run formatting.
 
 **(c) HTML deck only if the user asks for one**: a single self-contained file, one fixed 16:9 section per slide, keyboard navigation and print CSS so it exports to PDF. Same anatomy, logic tests and QA; render it with render.py.
 
@@ -184,7 +179,7 @@ Fix, re-render the changed slides and re-run any check the fix could affect. Rep
 
 ## Improving an existing deck
 
-Read the real file first (`doc_text.py deck.pptx` and a render). Write the ghost deck its current titles imply, then the ghost deck it should have; the difference is the plan. Implement it and deliver the file, not advice.
+Read the real file first (`doc_text.py deck.pptx` and a render). Write the ghost deck its current titles imply, then the one it should have, and mark every existing slide keep, rewrite, merge, cut or move to appendix: editing drifts toward adding. Implement the plan and deliver the file, not advice.
 
 | Symptom | Fix |
 |---|---|
@@ -192,13 +187,12 @@ Read the real file first (`doc_text.py deck.pptx` and a render). Write the ghost
 | The ask is buried at the end or missing | Put the recommendation and the decision requested right after the title slide; restate the decision on the closing slide |
 | Agenda, background, "about us", thank-you or Q&A slides | Delete; fold any context the decision needs into one line on the slide that needs it |
 | Bullet dumps (more than 4-6 bullets, paragraphs on slides) | Find the claim and make it the title; keep the bullets that prove it or turn them into a chart or table; move the rest to notes or the appendix |
-| 3D charts, pies with more than 3 slices, exploded pies | Replace with a native sorted bar or 100% stacked bar per dataviz.md |
+| 3D charts, pies with more than 3 slices, exploded pies | Replace with a native sorted bar or 100% stacked bar |
 | The same metric with different values or formats across slides | Trace each to the source and use the sourced figure; flag the discrepancy in the change log, never pick one silently |
 | Numbers without source or period | Add the source line; if the material has no source, mark `[TBD: source, owner]` |
-| Vague next steps ("continue monitoring", "align with stakeholders") | Specific action, owner, date and measure of done; `[TBD: owner]` where the material doesn't name one |
+| Vague next steps ("continue monitoring", "align with stakeholders") | Specific action, owner, date and measure of done; a `[TBD: what, owner]` placeholder where the material doesn't name them |
 | Decorative visuals (stock photos, icons, clip art, gradient boxes) | Remove, or replace with the evidence that proves the title |
 | Several messages on one slide, or one message on several | Split or merge so each slide has one job |
-| Inconsistent fonts, colors and title positions | Reapply the template's layouts; one accent color; titles in one place |
 
 End the final message with a change log of at most five lines:
 
@@ -213,12 +207,13 @@ Changes (11 → 7 slides + 2 appendix):
 
 ## Evidence notes
 
-Claim titles and storyline-first rest mostly on practitioner guidance; the chart-and-title findings come from small or crowdsourced studies. Treat them as support for the defaults above, not as measured effects on executive decisions.
+Takeaway titles and storyline-first rest mostly on practitioner guidance and a few small studies; the ghost deck itself has no accessed study behind it. Treat these as support for defaults, not measured effects on executive decisions.
 
-- Stratrix, "The pyramid principle" (practitioner page, undated), https://stratrix.com/craft/pyramid-principle: a heading that names a topic leaves the reader to do the thinking; moving the answer to the front without rewriting topic headings as claims doesn't fix the deck. No outcome data.
-- Ajani, Lee, Xiong, Nussbaumer Knaflic, Kemper and Franconeri, "Declutter and Focus", IEEE TVCG, 2021, https://par.nsf.gov/servlets/purl/10350268: a headline that states the pattern, plus one highlight color and an annotation, improved memory for the highlighted pattern; decluttering alone mainly raised professionalism ratings.
-- Kim, Setlur and Agrawala, CHI 2021, https://arxiv.org/abs/2101.08235: readers take the caption's message as the takeaway only when the chart also emphasizes that feature. Hence the rule that the highlight must match the title.
-- Kong, Liu and Karahalios, CHI 2018, https://mail.zcliu.cs.umd.edu/vistitles/CHI18-VisTitles.pdf: the slant of a title shapes the perceived main message of the same chart. Hence factual titles without evaluative adjectives.
-- Franconeri, Padilla, Shah, Zacks and Hullman, Psychological Science in the Public Interest, 2021 (abstract only), https://www.psychologicalscience.org/journals/pspi/15291006211051956/: effective graphics avoid taxing working memory, guide attention and follow familiar conventions.
-- W3C, WCAG 2.1 Understanding SC 1.4.1 Use of Color, https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html: color is never the only way information is conveyed.
-- Not yet cited, pending validated research: assertion-evidence slide design (Alley; Garner and Alley), Mayer's multimedia principles (coherence, signaling, redundancy) and Tufte's critique of bullet-point decks.
+- Garner, Alley et al., assertion-evidence slides (conference abstract; journal version IJEE 29(6), 2013), https://pure.psu.edu/en/publications/assertion-evidence-slides-appear-to-lead-to-better-comprehension--2/: in one short narrated lecture, students shown sentence headlines with visual evidence scored higher on complex-concept questions than those shown topic-and-bullet slides, while reading less text. Run by the method's developers; one topic, novice students.
+- Stratrix, "The pyramid principle" (practitioner page, undated), https://stratrix.com/craft/pyramid-principle: a topic heading leaves the thinking to the reader; moving the answer to the front without rewriting topic headings as claims doesn't fix a deck. No outcome data.
+- Tufte, quoting the Columbia Accident Investigation Board (2003), https://www.edwardtufte.com/notebook/columbia-accident-investigation-board-the-boeing-powerpoint-slide/: the headings, layout and bullet sizes of one briefing slide steered managers toward what they already believed, and the uncertainty got lost. A single case; Tufte's view that the tool itself is at fault is disputed. Hence caveats as sentences on the slide they qualify.
+- Ajani, Lee, Xiong, Nussbaumer Knaflic, Kemper and Franconeri, "Declutter and Focus", IEEE TVCG, 2021, https://par.nsf.gov/servlets/purl/10350268: a headline stating the pattern, one highlight color and an annotation improved memory for the highlighted pattern; decluttering alone mainly raised professionalism ratings.
+- Kim, Setlur and Agrawala, CHI 2021, https://arxiv.org/abs/2101.08235: readers adopt a caption's message only when the chart also emphasizes that feature; hence the highlight must match the title. Kong, Liu and Karahalios, CHI 2018, https://mail.zcliu.cs.umd.edu/vistitles/CHI18-VisTitles.pdf: a title's slant shapes the message readers take from the same chart; hence factual titles.
+- Rogers and Lasky-Fink, book excerpt, https://behavioralscientist.org/when-writing-for-busy-readers-less-is-more/: most people asked to improve a summary added words rather than cut (one reported experiment, secondary); hence the explicit keep/cut decision per slide.
+- W3C, WCAG 2.1 SC 1.4.1 Use of Color, https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html: color is never the only means of conveying information.
+- Not cited yet (dossier entries not accessed): Mayer's multimedia principles (coherence, signaling, redundancy) via the redundancy and seductive-details meta-analyses, and Alley's 2006 headline study. The no-script and no-decoration rules await them.
