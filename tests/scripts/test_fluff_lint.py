@@ -48,7 +48,7 @@ class WeakDeck(unittest.TestCase):
         self.assertFalse([s for s in vague if "Brandt" in s], "the Brandt bullet names a deadline and an exit")
 
     def test_background_filler_flagged(self):
-        matched = {f["matched"].lower() for f in self.of("FILLER")}
+        matched = {phrase.lower() for f in self.of("FILLER") for phrase in f["matched"]}
         self.assertIn("going forward", matched)
         self.assertTrue(all(f["location"] == "slide 3 / body" for f in self.of("FILLER")))
 
@@ -78,7 +78,7 @@ class OtherFixtures(unittest.TestCase):
         by_rule = {}
         for f in report["findings"]:
             by_rule.setdefault(f["rule"], []).append(f)
-        self.assertTrue(any("rapidly evolving" in f["matched"].lower() for f in by_rule["FILLER"]))
+        self.assertTrue(any("rapidly evolving" in " ".join(f["matched"]).lower() for f in by_rule["FILLER"]))
         claim_locations = {f["location"] for f in by_rule["UNSUPPORTED_CLAIM"]}
         self.assertIn("line 37", claim_locations)   # "Strong season, shelf gains" table cell
         self.assertIn("line 52", claim_locations)   # conclusion: solid / strong with no numbers
@@ -133,13 +133,15 @@ class Rules(unittest.TestCase):
         self.assertEqual(rules(findings), ["UNSUPPORTED_CLAIM"])
         self.assertEqual(lint_text("O resultado foi expressivo: +12% vs. 3T25 no trimestre.", "pt")[0], [])
         findings, _ = lint_text("Vale ressaltar que, no cenário atual, o time deve alavancar sinergias.", "pt")
-        self.assertEqual(rules(findings), ["FILLER"] * 3)
+        self.assertEqual(rules(findings), ["FILLER"])  # one finding per sentence, listing all three phrases
+        self.assertEqual(findings[0].extra["matched"], ["Vale ressaltar", "no cenário atual", "alavancar sinergias"])
         self.assertEqual(lint_text("Vale ressaltar que a margem caiu", "pt")[0][0].rule, "FILLER")
         self.assertEqual(lint_text("VALE RESSALTAR que a margem caiu", "pt")[0][0].rule, "FILLER")  # case-insensitive
-        self.assertEqual(lint_text("Vale ressaltar que a margem caiu", "pt")[0][0].extra["matched"], "Vale ressaltar")
+        self.assertEqual(lint_text("Vale ressaltar que a margem caiu", "pt")[0][0].extra["matched"], ["Vale ressaltar"])
 
     def test_filler_matches_whole_phrases_only_and_tolerates_variants(self):
-        self.assertEqual(rules(lint_text("We will reach out to the Best-In-Class suppliers.", "en")[0]), ["FILLER", "FILLER"])
+        findings = lint_text("We will reach out to the Best-In-Class suppliers.", "en")[0]
+        self.assertEqual([f.extra["matched"] for f in findings], [["reach out", "Best-In-Class"]])
         self.assertEqual(lint_text("The outreach program reached 4 regions.", "en")[0], [])
         self.assertEqual(rules(lint_text("IN TODAY’S RAPIDLY CHANGING market we grew 3%.", "en")[0]), ["FILLER"])
 

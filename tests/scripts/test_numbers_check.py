@@ -157,6 +157,7 @@ class Normalisation(unittest.TestCase):
         self.assertEqual(norm("See slide 4 and Table 2, page 7-8."), [])
         self.assertEqual(norm("details at https://example.com/report/2026/12 or a@b.co"), [])
         self.assertEqual(norm("1. First\n2) Second 45%\n### 3. Section 12.5%\n4.2 Pricing 3.3%"), ["45%", "3.3%"])
+        self.assertEqual(norm("4.5 Million units\n48.7 MM revenue"), ["4500000", "48700000"])  # scale words are not outline titles
 
     def test_precision_step(self):
         self.assertEqual(one("48,7 mi", "pt").step, Decimal("100000"))
@@ -289,9 +290,9 @@ class Trace(TempFiles):
     def test_years_ignored_by_default_and_checked_on_request(self):
         text = "In 2027 we plan to grow. Q4 2027 and March 2027 matter. 86.2 is fine."
         self.assertEqual(self.untraced(text), [])
-        self.assertEqual(self.untraced(text, include_years=False), [])
+        self.assertEqual(self.untraced(text, ignore_years=True), [])
         raw = [u["raw"] for u in self.trace(text, self.SOURCE, ignore_years=False)["untraced"]]
-        self.assertEqual(sorted(raw), ["2027", "Q4 2027", "March 2027"])
+        self.assertEqual(sorted(raw), ["2027", "March 2027", "Q4 2027"])
 
     def test_full_dates_are_always_checked(self):
         self.assertEqual(self.untraced("Decision by December 31, 2026."), ["December 31, 2026"])

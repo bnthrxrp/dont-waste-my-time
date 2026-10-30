@@ -7,19 +7,20 @@ checks see the same text and report locations the same way.
 
 Usage
 -----
-    python3 doc_text.py FILE [--json] [--titles]
+    python3 doc_text.py FILE [--json] [--titles] [--include-masters]
 
     FILE      .pptx .docx .xlsx .csv .md .txt .html .htm
     --json    machine-readable output: {"file", "format", "units", "warnings"}
     --titles  (pptx only) print just the slide titles, one per line
+    --include-masters  (pptx only) also read text on used layouts and the slide master
 
 Text mode prints one block per unit as "[location] text"; multi-line texts
 (bullets) are indented under the first line.
 
 Python API
 ----------
-    extract_units(path) -> list[dict]
-    extract_with_warnings(path) -> (list[dict], list[str])
+    extract_units(path, include_masters=False) -> list[dict]
+    extract_with_warnings(path, include_masters=False) -> (list[dict], list[str])
     slide_titles(path) -> [{"slide": 1, "title": "..."}, ...]   (pptx)
     detect_language(text) -> "pt" | "en"
 
@@ -35,6 +36,7 @@ and optionally:
     line              1-based source line (md/txt)
     code              True for lines inside a markdown code fence
     formula           True for an xlsx cell holding a formula with no cached value
+    comment, author   True/author for a docx review comment (reviewer chatter, not deliverable text)
     machine_spans     [[start, end], ...] character ranges of `text` whose numbers
                       are locale-neutral machine values (dot decimal, no grouping),
                       e.g. chart series values or numeric spreadsheet cells.
@@ -45,6 +47,13 @@ Notes
 -----
 * Charts are read from the chart XML (not python-pptx's plot API), so every
   chart type works, including 3-D pies that python-pptx cannot model.
+* pptx also yields shape alt text ("slide N / alt": the descr/title of any shape, file-name
+  alt text skipped). With --include-masters (off by default) it adds visible text on the
+  layouts the deck uses ("layout <name>") and on the slide master ("master"), ignoring
+  placeholder prompt text such as "Click to edit Master title style".
+* docx also yields headers and footers ("header", "footer"), footnotes and endnotes
+  ("footnote 3", numbered as Word shows them), comments ("comment 2", with the author) and
+  text boxes ("textbox 1"). Parts a document does not have are skipped silently.
 * HTML extraction is static: text created by JavaScript at runtime is not seen.
   Use render.py to look at the rendered page.
 * Legacy .doc/.ppt/.xls are not supported; convert them with LibreOffice first.
@@ -167,6 +176,59 @@ def _walk_shapes(shapes):
             yield shape
 
 
+def _walk_all_shapes(shapes):
+    """Yield every shape including the group containers themselves (alt text can sit on a group)."""
+    for shape in shapes:
+        yield shape
+        try:
+            is_group = shape.shape_type == 6
+        except NotImplementedError:
+            is_group = False
+        if is_group:
+            yield from _walk_all_shapes(shape.shapes)
+
+
+# Alt text that is only a file name (python-pptx stores the image's file name when a picture is added)
+# is tooling noise, not something a reader or a translator needs to see.
+_FILENAME_ALT = re.compile(r"^[\w\- .()]+\.(?:png|jpe?g|gif|svg|bmp|emf|wmf|tiff?|webp)$", re.I)
+_FOOTER_PLACEHOLDER = 15  # PP_PLACEHOLDER.FOOTER: the only placeholder type that carries real text on layouts
+
+
+def _alt_text(shape) -> str:
+    """Alt text from the descr/title attributes of the shape's p:cNvPr ("" when none)."""
+    try:
+        c_nv_pr = shape._element.xpath("./*[1]/p:cNvPr")
+    except Exception:
+        return ""
+    if not c_nv_pr:
+        return ""
+    parts: list[str] = []
+    for attribute in ("title", "descr"):
+        value = _clean(c_nv_pr[0].get(attribute) or "")
+        if value and not _FILENAME_ALT.match(value) and value not in parts:
+            parts.append(value)
+    return " - ".join(parts)
+
+
+def _template_units(shapes, label: str) -> list[Unit]:
+    """Visible text on a slide layout or master: everything except placeholder prompt text."""
+    found: list[tuple[str, str]] = []
+    for shape in _walk_shapes(shapes):
+        if not getattr(shape, "has_text_frame", False) or not shape.has_text_frame:
+            continue
+        if shape.is_placeholder and shape.placeholder_format.type != _FOOTER_PLACEHOLDER:
+            continue  # "Click to edit Master title style" and friends
+        paragraphs = [_clean(p.text) for p in shape.text_frame.paragraphs]
+        paragraphs = [p for p in paragraphs if p]
+        if paragraphs:
+            found.append(("\n".join(paragraphs), shape.name))
+    units = []
+    for index, (text, name) in enumerate(found, start=1):
+        suffix = f" #{index}" if len(found) > 1 else ""
+        units.append(_unit(f"{label}{suffix}", "text", text, shape=name))
+    return units
+
+
 def _format_number_text(raw: str, number_format: str = "") -> str:
     """Render a numeric string from XML as a plain decimal (no exponent)."""
     try:
@@ -230,7 +292,7 @@ def _chart_unit(chart_space, location: str, slide: int) -> Unit:
     return unit
 
 
-def _pptx_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _pptx_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     pptx = _require("pptx", "python-pptx")
     prs = pptx.Presentation(str(path))
     units: list[Unit] = []
@@ -289,6 +351,12 @@ def _pptx_units(path: Path, warnings: list[str]) -> list[Unit]:
                 warnings.append(f"{location}: chart could not be parsed ({exc.__class__.__name__}: {exc})")
                 units.append(_unit(location, "chart", "chart (unparsed)", slide=number))
 
+        alts = [(shape, _alt_text(shape)) for shape in _walk_all_shapes(slide.shapes)]
+        alts = [(shape, text) for shape, text in alts if text]
+        for a_index, (shape, text) in enumerate(alts, start=1):
+            suffix = f" {a_index}" if len(alts) > 1 else ""
+            units.append(_unit(f"slide {number} / alt{suffix}", "text", text, slide=number, shape=shape.name))
+
         if slide.has_notes_slide:
             frame = slide.notes_slide.notes_text_frame
             if frame is not None:
@@ -297,6 +365,15 @@ def _pptx_units(path: Path, warnings: list[str]) -> list[Unit]:
                 if paragraphs:
                     units.append(_unit(f"slide {number} / notes", "notes", "\n".join(paragraphs),
                                        slide=number, paragraphs=paragraphs))
+
+    if options.get("include_masters"):
+        # Only layouts that slides actually use: a template ships dozens of unused ones.
+        used_layouts: dict[str, Any] = {}
+        for slide in prs.slides:
+            used_layouts.setdefault(slide.slide_layout.name, slide.slide_layout)
+        for name, layout in used_layouts.items():
+            units += _template_units(layout.shapes, f"layout {name}")
+        units += _template_units(prs.slide_master.shapes, "master")
     return units
 
 
@@ -316,7 +393,7 @@ def slide_titles(path: str | Path) -> list[dict[str, Any]]:
 # DOCX
 # ---------------------------------------------------------------------------
 
-def _docx_table_units(table, label: str, kind_prefix: str, units: list[Unit]) -> None:
+def _docx_table_units(table, label: str, units: list[Unit]) -> None:
     for r, row in enumerate(table.rows, start=1):
         seen_cells = set()
         for c, cell in enumerate(row.cells, start=1):
@@ -328,10 +405,10 @@ def _docx_table_units(table, label: str, kind_prefix: str, units: list[Unit]) ->
             if text:
                 units.append(_unit(location, "table", text))
             for n, nested in enumerate(cell.tables, start=1):
-                _docx_table_units(nested, f"{location} / table {n}", kind_prefix, units)
+                _docx_table_units(nested, f"{location} / table {n}", units)
 
 
-def _docx_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _docx_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     docx = _require("docx", "python-docx")
     from docx.table import Table
     from docx.text.paragraph import Paragraph
@@ -363,7 +440,7 @@ def _docx_units(path: Path, warnings: list[str]) -> list[Unit]:
                 units.append(_unit(f"paragraph {state['para']}", kind, text, style=style))
             elif tag == "tbl":
                 state["table"] += 1
-                _docx_table_units(Table(child, document), f"table {state['table']}", "", units)
+                _docx_table_units(Table(child, document), f"table {state['table']}", units)
             elif tag == "sdt":  # content control: its children live in w:sdtContent
                 for content in child.iterchildren():
                     if content.tag.rsplit("}", 1)[-1] == "sdtContent":
@@ -371,15 +448,151 @@ def _docx_units(path: Path, warnings: list[str]) -> list[Unit]:
 
     walk(body)
 
-    seen_hf: set[str] = set()
-    for s_index, section in enumerate(document.sections, start=1):
-        for label, part in (("header", section.header), ("footer", section.footer)):
-            if part.is_linked_to_previous:
+    units += _docx_package_units(path, warnings)
+    return units
+
+
+# Parts python-docx does not model (footnotes, endnotes, comments) or models awkwardly (headers/footers in
+# all variants, text boxes) are read straight from the zip with the standard library. A part that is
+# absent or unparseable is skipped silently: most documents have none of them.
+_W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+_MC_FALLBACK = "{http://schemas.openxmlformats.org/markup-compatibility/2006}Fallback"
+_PAGE_NUMBER_ONLY = re.compile(r"^\d{1,3}$")  # a PAGE field's cached result, not content
+
+
+def _xml_para_text(paragraph) -> str:
+    """Text of one w:p: runs, tabs and breaks; not text boxes (read separately) or deleted text."""
+    pieces: list[str] = []
+
+    def visit(node) -> None:
+        for child in node:
+            if child.tag in (_W + "txbxContent", _MC_FALLBACK):
                 continue
-            text = _clean("\n".join(p.text for p in part.paragraphs if p.text.strip()))
-            if text and (label, text) not in seen_hf:
-                seen_hf.add((label, text))
-                units.append(_unit(f"{label} (section {s_index})", "text", text))
+            if child.tag == _W + "t":
+                pieces.append(child.text or "")
+            elif child.tag in (_W + "tab", _W + "br", _W + "cr"):
+                pieces.append(" ")
+            else:
+                visit(child)
+
+    visit(paragraph)
+    return _clean(re.sub(r"\s+", " ", "".join(pieces)))
+
+
+def _xml_paragraphs(root) -> list[str]:
+    """Non-empty paragraph texts under `root` in document order, skipping text-box content and mc:Fallback copies."""
+    found: list[str] = []
+
+    def visit(node) -> None:
+        for child in node:
+            if child.tag in (_W + "txbxContent", _MC_FALLBACK):
+                continue
+            if child.tag == _W + "p":
+                text = _xml_para_text(child)
+                if text:
+                    found.append(text)
+            else:
+                visit(child)
+
+    visit(root)
+    return found
+
+
+def _xml_textboxes(root) -> list[str]:
+    """One text per text box. Word writes each box twice (DrawingML + VML fallback); only the first is read."""
+    boxes: list[str] = []
+
+    def visit(node) -> None:
+        for child in node:
+            if child.tag == _MC_FALLBACK:
+                continue
+            if child.tag == _W + "txbxContent":
+                text = "\n".join(_xml_paragraphs(child))
+                if text:
+                    boxes.append(text)
+                visit(child)  # a text box nested in a text box
+            else:
+                visit(child)
+
+    visit(root)
+    return boxes
+
+
+def _reference_order(root, tag: str) -> dict[str, int]:
+    """Map w:id -> 1-based position of its first reference in the body (what Word numbers the note as)."""
+    order: dict[str, int] = {}
+
+    def visit(node) -> None:
+        for child in node:
+            if child.tag == _MC_FALLBACK:
+                continue
+            if child.tag == _W + tag:
+                order.setdefault(child.get(_W + "id", ""), len(order) + 1)
+            visit(child)
+
+    visit(root)
+    return order
+
+
+def _docx_package_units(path: Path, warnings: list[str]) -> list[Unit]:
+    import zipfile
+    from xml.etree import ElementTree
+
+    units: list[Unit] = []
+
+    def read(archive, name: str):
+        try:
+            return ElementTree.fromstring(archive.read(name))
+        except (KeyError, ElementTree.ParseError):
+            return None
+
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        return units
+    with archive:
+        names = set(archive.namelist())
+        document = read(archive, "word/document.xml")
+
+        for label in ("header", "footer"):
+            distinct: list[str] = []
+            boxes: list[str] = []
+            for name in sorted(n for n in names if re.fullmatch(rf"word/{label}\d*\.xml", n)):
+                root = read(archive, name)
+                if root is None:
+                    continue
+                text = "\n".join(_xml_paragraphs(root))
+                if text and not _PAGE_NUMBER_ONLY.match(text) and text not in distinct:
+                    distinct.append(text)
+                boxes += [box for box in _xml_textboxes(root) if box not in boxes]
+            for index, text in enumerate(distinct, start=1):
+                units.append(_unit(label if len(distinct) == 1 else f"{label} {index}", "text", text))
+            for box in boxes:
+                units.append(_unit(f"{label} textbox", "text", box))
+
+        for part, tag, element, label, kind in (
+            ("word/footnotes.xml", "footnoteReference", "footnote", "footnote", "notes"),
+            ("word/endnotes.xml", "endnoteReference", "endnote", "endnote", "notes"),
+            ("word/comments.xml", "commentReference", "comment", "comment", "text"),
+        ):
+            root = read(archive, part)
+            if root is None:
+                continue
+            order = _reference_order(document, tag) if document is not None else {}
+            entries = []
+            for index, node in enumerate(root.iter(_W + element)):
+                if node.get(_W + "type") in ("separator", "continuationSeparator", "continuationNotice"):
+                    continue
+                text = "\n".join(_xml_paragraphs(node))
+                if text:
+                    entries.append((order.get(node.get(_W + "id", ""), 10**6 + index), node, text))
+            for rank, (_, node, text) in enumerate(sorted(entries, key=lambda e: e[0]), start=1):
+                extra = {"comment": True, "author": node.get(_W + "author") or ""} if element == "comment" else {}
+                units.append(_unit(f"{label} {rank}", kind, text, **extra))
+
+        if document is not None:
+            for number, box in enumerate(_xml_textboxes(document), start=1):
+                units.append(_unit(f"textbox {number}", "text", box))
     return units
 
 
@@ -409,7 +622,7 @@ def _cell_text(value: Any, number_format: str) -> tuple[str, bool]:
     return _clean(str(value)), False
 
 
-def _xlsx_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _xlsx_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     openpyxl = _require("openpyxl", "openpyxl")
     units: list[Unit] = []
 
@@ -465,7 +678,7 @@ def _xlsx_units(path: Path, warnings: list[str]) -> list[Unit]:
 # CSV
 # ---------------------------------------------------------------------------
 
-def _csv_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _csv_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     text = _read_text_file(path)
     sample = text[:8192]
     try:
@@ -496,7 +709,7 @@ _MD_RULE = re.compile(r"^\s*([-*_=])\1{2,}\s*$")
 _MD_FENCE = re.compile(r"^\s*(```|~~~)")
 
 
-def _markdown_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _markdown_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     units: list[Unit] = []
     in_code = False
     for number, raw in enumerate(_read_text_file(path).splitlines(), start=1):
@@ -681,7 +894,7 @@ class _HtmlTextParser(HTMLParser):
         self._flush()
 
 
-def _html_units(path: Path, warnings: list[str]) -> list[Unit]:
+def _html_units(path: Path, warnings: list[str], options: dict[str, Any]) -> list[Unit]:
     parser = _HtmlTextParser()
     parser.feed(_read_text_file(path))
     parser.close()
@@ -715,20 +928,23 @@ def file_format(path: str | Path) -> str:
     return _READERS[suffix][0]
 
 
-def extract_with_warnings(path: str | Path) -> tuple[list[Unit], list[str]]:
-    """Extract text units and any non-fatal warnings (e.g. an unparseable chart)."""
+def extract_with_warnings(path: str | Path, include_masters: bool = False) -> tuple[list[Unit], list[str]]:
+    """Extract text units and any non-fatal warnings (e.g. an unparseable chart).
+
+    include_masters: (pptx only) also return text on the layouts the deck uses and on the slide master.
+    """
     path = Path(path)
     file_format(path)  # validates the extension
     if not path.is_file():
         raise FileNotFoundError(f"No such file: {path}")
     warnings: list[str] = []
-    units = _READERS[path.suffix.lower()][1](path, warnings)
+    units = _READERS[path.suffix.lower()][1](path, warnings, {"include_masters": include_masters})
     return units, warnings
 
 
-def extract_units(path: str | Path) -> list[Unit]:
+def extract_units(path: str | Path, include_masters: bool = False) -> list[Unit]:
     """Extract text units from a supported file. See the module docstring for the unit schema."""
-    return extract_with_warnings(path)[0]
+    return extract_with_warnings(path, include_masters)[0]
 
 
 # ---------------------------------------------------------------------------
@@ -748,6 +964,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("file", help="file to read")
     parser.add_argument("--json", action="store_true", help="machine-readable JSON output")
     parser.add_argument("--titles", action="store_true", help="(pptx only) print only the slide titles")
+    parser.add_argument("--include-masters", action="store_true",
+                        help="(pptx only) also read text on the used slide layouts and the slide master")
     args = parser.parse_args(argv)
     path = Path(args.file)
 
@@ -760,7 +978,7 @@ def main(argv: list[str] | None = None) -> int:
                 for item in titles:
                     print(f"{item['slide']}. {item['title'] or '(no title)'}")
             return 0
-        units, warnings = extract_with_warnings(path)
+        units, warnings = extract_with_warnings(path, args.include_masters)
     except (FileNotFoundError, UnsupportedFormat, MissingDependency) as exc:
         print(f"doc_text: {exc}", file=sys.stderr)
         return 1

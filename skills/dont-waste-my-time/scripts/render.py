@@ -21,13 +21,17 @@ How each type is rendered
   390x844 (mobile, with touch/mobile emulation so <meta viewport> is honoured) and takes
   full-page screenshots <name>-desktop.png and <name>-mobile.png. It also collects:
     - console errors, uncaught page errors, failed requests (including HTTP >= 400) and broken images
-    - horizontal overflow of the page: document scrollWidth vs viewport width, with the widest
+    - horizontal overflow of the page: document scrollWidth vs layout viewport width, with the widest
       offending elements
     - CONTAINER CLIPPING: elements whose content is wider/taller than the box while overflow is
       hidden/clip (content cut off inside a card or table wrapper, which a page-level overflow
       check misses). overflow auto/scroll is treated as intentional and not reported. Up to 20
       per viewport, with a selector-ish descriptor, the first 40 characters of text and the
       overflow in px. Ellipsis / line-clamp truncation is marked as such.
+    - SCROLL NEEDED (informational, desktop only): overflow auto/scroll containers whose content does
+      not fit, so part of it stays hidden until the viewer scrolls inside the box (e.g. a table wider
+      than its wrapper at 1440px). Vertical scroll is listed only for table wrappers or when more than
+      40px is hidden. Not reported at mobile width, where sideways table scrolling is normal. Up to 10.
     - a missing <meta name="viewport">, which makes phones render the page at ~980px wide
   HTML static checks only see what the page does at load time plus a short settle delay.
 
@@ -55,6 +59,8 @@ NODE_TIMEOUT_S = 180
 VIEWPORTS = [("desktop", 1440, 900, False), ("mobile", 390, 844, True)]   # name, width, height, mobile emulation
 MAX_CLIPPED_REPORTED = 20          # per viewport
 MAX_OFFENDERS_REPORTED = 8         # widest elements when the page overflows horizontally
+MAX_SCROLLABLE_REPORTED = 10       # desktop containers that need scrolling to show all their content
+SCROLL_Y_MIN_HIDDEN_PX = 40        # vertical scroll is only worth a note for table wrappers or >40px of hidden content
 PAGE_SETTLE_MS = 800               # let charts/animations finish after the load event
 NAVIGATION_TIMEOUT_MS = 30_000
 OVERFLOW_TOLERANCE_PX = 1          # sub-pixel layout rounding
@@ -66,7 +72,7 @@ HTML_EXTENSIONS = {".html", ".htm"}
 # stray console output from Playwright can never corrupt them.
 NODE_SCRIPT = r"""
 const fs = require('fs');
-const [fileUrl, outPrefix, resultPath, viewportsJson, settleMs, navTimeout, clipLimit, offenderLimit, tolerance] = process.argv.slice(2);
+const [fileUrl, outPrefix, resultPath, viewportsJson, settleMs, navTimeout, clipLimit, offenderLimit, tolerance, scrollLimit, scrollYMin] = process.argv.slice(2);
 function finish(result, code) { fs.writeFileSync(resultPath, JSON.stringify(result)); process.exit(code); }
 let chromium;
 try { ({ chromium } = require('playwright')); }
@@ -76,9 +82,11 @@ catch (e1) {
 }
 
 function measurePage(args) {
-  const { clipLimit, offenderLimit, tol } = args;
+  const { clipLimit, offenderLimit, tol, reportScrollable, scrollLimit, scrollYMin } = args;
   const de = document.documentElement, body = document.body;
-  const vw = window.innerWidth;
+  // Compare against the LAYOUT viewport: on a phone the browser may zoom out to fit wide content, which
+  // inflates window.innerWidth and would hide exactly the overflow we are looking for.
+  const vw = de.clientWidth || window.innerWidth;
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
   const describe = (el) => {
     let s = el.tagName.toLowerCase();
@@ -90,13 +98,14 @@ function measurePage(args) {
   };
   const scrollWidth = Math.max(de.scrollWidth, body ? body.scrollWidth : 0);
   const result = {
-    viewportWidth: vw,
+    viewportWidth: window.innerWidth,
+    layoutWidth: vw,
     scrollWidth: scrollWidth,
     scrollHeight: Math.max(de.scrollHeight, body ? body.scrollHeight : 0),
     horizontalOverflow: scrollWidth > vw + tol,
     hasViewportMeta: !!document.querySelector('meta[name="viewport"]'),
     title: document.title,
-    offenders: [], clipped: [], clippedTotal: 0, brokenImages: [],
+    offenders: [], clipped: [], clippedTotal: 0, scrollNeeded: [], scrollNeededTotal: 0, brokenImages: [],
   };
 
   const everything = [de].concat(body ? [body] : [], body ? Array.from(body.querySelectorAll('*')) : []);
@@ -126,6 +135,29 @@ function measurePage(args) {
   clipped.sort((a, b) => Math.max(b.overflowXpx, b.overflowYpx) - Math.max(a.overflowXpx, a.overflowYpx));
   result.clippedTotal = clipped.length;
   result.clipped = clipped.slice(0, clipLimit);
+
+  // Containers that scroll on purpose (overflow auto/scroll) but whose content does not fit, so part of it is
+  // hidden until the viewer scrolls inside the box. Informational, and only asked for at desktop width, where a
+  // table that needs sideways scrolling is a layout choice worth knowing about (on phones it is normal).
+  if (reportScrollable) {
+    const needed = [];
+    for (const el of everything) {
+      if (!(el instanceof HTMLElement) || el === de || el === body) continue;
+      if (['TEXTAREA', 'INPUT', 'SELECT'].includes(el.tagName)) continue;  // form controls scroll natively
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || el.clientWidth <= 1 || el.clientHeight <= 1) continue;
+      const scrollsX = cs.overflowX === 'auto' || cs.overflowX === 'scroll';
+      const scrollsY = cs.overflowY === 'auto' || cs.overflowY === 'scroll';
+      const x = scrollsX ? el.scrollWidth - el.clientWidth : 0;
+      let y = scrollsY ? el.scrollHeight - el.clientHeight : 0;
+      const wrapsTable = !!el.querySelector('table');
+      if (y <= (wrapsTable ? tol : scrollYMin)) y = 0;  // small vertical overflow in a non-table box is noise
+      if (x > tol || y > 0) needed.push({ element: describe(el), hiddenXpx: x > tol ? x : 0, hiddenYpx: y, tableWrapper: wrapsTable });
+    }
+    needed.sort((a, b) => Math.max(b.hiddenXpx, b.hiddenYpx) - Math.max(a.hiddenXpx, a.hiddenYpx));
+    result.scrollNeededTotal = needed.length;
+    result.scrollNeeded = needed.slice(0, scrollLimit);
+  }
 
   if (result.horizontalOverflow) {
     // Only elements that really push the page wider: not those inside a scrolling/clipping wrapper.
@@ -173,7 +205,8 @@ function measurePage(args) {
       try { await page.goto(fileUrl, { waitUntil: 'load', timeout: Number(navTimeout) }); }
       catch (e) { entry.error = 'navigation: ' + String(e.message).split('\n')[0]; }
       await page.waitForTimeout(Number(settleMs));
-      entry.metrics = await page.evaluate(measurePage, { clipLimit: Number(clipLimit), offenderLimit: Number(offenderLimit), tol: Number(tolerance) });
+      entry.metrics = await page.evaluate(measurePage, { clipLimit: Number(clipLimit), offenderLimit: Number(offenderLimit), tol: Number(tolerance),
+        reportScrollable: vp.name === 'desktop', scrollLimit: Number(scrollLimit), scrollYMin: Number(scrollYMin) });
       const shot = outPrefix + '-' + vp.name + '.png';
       await page.screenshot({ path: shot, fullPage: true });
       entry.screenshot = shot;
@@ -323,7 +356,8 @@ def render_html(path: Path, out_dir: Path, result: dict) -> None:
         viewports = [{"name": n, "width": w, "height": h, "mobile": m} for n, w, h, m in VIEWPORTS]
         cmd = [node, str(script), path.resolve().as_uri(), str(out_dir / path.stem), str(results_file),
                json.dumps(viewports), str(PAGE_SETTLE_MS), str(NAVIGATION_TIMEOUT_MS), str(MAX_CLIPPED_REPORTED),
-               str(MAX_OFFENDERS_REPORTED), str(OVERFLOW_TOLERANCE_PX)]
+               str(MAX_OFFENDERS_REPORTED), str(OVERFLOW_TOLERANCE_PX), str(MAX_SCROLLABLE_REPORTED),
+               str(SCROLL_Y_MIN_HIDDEN_PX)]
         try:
             proc = run(cmd, NODE_TIMEOUT_S, env=node_env())
         except subprocess.TimeoutExpired:
@@ -358,7 +392,7 @@ def collect_problems(result: dict) -> list[str]:
         if metrics["horizontalOverflow"]:
             offenders = "; ".join(f"{o['element']} (right edge {o['rightEdgePx']}px)" for o in metrics["offenders"][:3])
             problems.append(f"[{name}] horizontal overflow: page is {metrics['scrollWidth']}px wide in a "
-                            f"{metrics['viewportWidth']}px viewport" + (f"; widest: {offenders}" if offenders else ""))
+                            f"{metrics['layoutWidth']}px viewport" + (f"; widest: {offenders}" if offenders else ""))
         for clip in metrics["clipped"]:
             amounts = []
             if clip["overflowXpx"]:
@@ -376,11 +410,28 @@ def collect_problems(result: dict) -> list[str]:
     return problems
 
 
+def collect_info(result: dict) -> list[str]:
+    """Informational notes (never problems, never affect the exit code)."""
+    info: list[str] = []
+    for v in result.get("html") or []:
+        metrics = v.get("metrics") or {}
+        total = metrics.get("scrollNeededTotal", 0)
+        if v["name"] == "desktop" and total:
+            horizontal = sum(1 for item in metrics["scrollNeeded"] if item["hiddenXpx"])
+            if total == horizontal == len(metrics["scrollNeeded"]):
+                noun = "container needs" if total == 1 else "containers need"
+                info.append(f"{total} {noun} horizontal scrolling at desktop width")
+            else:
+                noun = "container needs" if total == 1 else "containers need"
+                info.append(f"{total} {noun} scrolling at desktop width to show all content")
+    return info
+
+
 def render_file(path: Path, out_dir: Path, pages: str | None) -> dict:
     runs = parse_pages(pages)
     suffix = path.suffix.lower()
     result: dict = {"input": path.resolve().as_posix(), "type": suffix.lstrip("."), "out_dir": out_dir.resolve().as_posix(),
-                    "images": [], "pdf": None, "pages_total": None, "warnings": [], "problems": [], "html": None}
+                    "images": [], "pdf": None, "pages_total": None, "warnings": [], "problems": [], "info": [], "html": None}
     out_dir.mkdir(parents=True, exist_ok=True)
     clear_previous(out_dir, path.stem)
     if suffix in OFFICE_EXTENSIONS:
@@ -398,6 +449,7 @@ def render_file(path: Path, out_dir: Path, pages: str | None) -> dict:
     if not result["images"]:
         raise RenderError("rendering produced no images")
     result["problems"] = collect_problems(result)
+    result["info"] = collect_info(result)
     return result
 
 
@@ -412,11 +464,26 @@ def render_text(result: dict) -> str:
         lines += [f"  - {p}" for p in result["problems"]]
     elif result["html"]:
         lines += ["", "No console errors, uncaught exceptions, failed requests, overflow or clipped containers detected."]
+    for note in result["info"]:
+        lines.append(f"  note: {note}")
+    for v in result["html"] or []:
+        metrics = v.get("metrics") or {}
+        if v["name"] == "desktop" and metrics.get("scrollNeeded"):
+            lines += ["", "Scroll needed to see content (desktop) - informational, not an error:"]
+            for item in metrics["scrollNeeded"]:
+                hidden = []
+                if item["hiddenXpx"]:
+                    hidden.append(f"{item['hiddenXpx']}px hidden horizontally")
+                if item["hiddenYpx"]:
+                    hidden.append(f"{item['hiddenYpx']}px hidden vertically")
+                lines.append(f"  - {item['element']}: {' and '.join(hidden)}")
+            if metrics["scrollNeededTotal"] > len(metrics["scrollNeeded"]):
+                lines.append(f"  ... and {metrics['scrollNeededTotal'] - len(metrics['scrollNeeded'])} more")
     for v in result["html"] or []:
         m = v.get("metrics")
         if m:
-            lines.append(f"  {v['name']} ({v['width']}x{v['height']}): document {m['scrollWidth']}px wide / viewport "
-                         f"{m['viewportWidth']}px, {m['scrollHeight']}px tall; {v['consoleWarnings']} console warning(s)")
+            lines.append(f"  {v['name']} ({v['width']}x{v['height']}): document {m['scrollWidth']}px wide / layout viewport "
+                         f"{m['layoutWidth']}px, {m['scrollHeight']}px tall; {v['consoleWarnings']} console warning(s)")
     for warning in result["warnings"]:
         lines.append(f"warning: {warning}")
     lines.append("")

@@ -68,7 +68,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
-from decimal import Decimal, InvalidOperation
+from decimal import ROUND_HALF_EVEN, ROUND_HALF_UP, Decimal, InvalidOperation
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -80,14 +80,14 @@ import doc_text  # noqa: E402  (shared extraction; must follow the sys.path twea
 # ---------------------------------------------------------------------------
 
 SNIPPET_RADIUS = 45          # characters of context shown on each side of a number
-MIN_DOC_WORDS_FOR_FORMAT_NOTE = 20   # below this, language detection is too weak to call a format "wrong"
+MIN_LANGUAGE_EVIDENCE = 4    # stopword hits needed before a number format can be called "wrong" for the language
+LANGUAGE_DOMINANCE = 3       # ...and the winning language needs this many times the other's score
 MAX_FORMAT_NOTES = 5         # examples listed per format note
 MAX_LOOSE_LISTED = 25        # loosely traced numbers listed in the text report (all are in --json)
 LOCATION_OVERLAP_MIN = 0.5   # per-location counts are only meaningful if half the locations line up
-YEAR_RANGE = (1900, 2100)    # four-digit integers in this range are treated as years
+YEAR_RANGE = (1900, 2100)    # four-digit integers (and years inside dates) in this range are plausible years
 BPS_PER_PP = 100             # 1 percentage point = 100 basis points
 SCALE_SHIFTS = (3, 6, 9)     # trace: a table in "$M" vs prose in "$" differs by 10^3, 10^6 or 10^9
-PLAUSIBLE_YEARS = (1900, 2100)
 
 # Hyphen-minus is the only sign we model; fold the look-alikes (length-preserving so offsets hold).
 _CHAR_FOLD = str.maketrans({
@@ -109,7 +109,7 @@ _SCALE_VALUE = {  # key = lower-case text, except where case matters (handled in
     "mi": 10**6, "mn": 10**6, "milhão": 10**6, "milhao": 10**6, "milhões": 10**6, "milhoes": 10**6, "million": 10**6,
     "mil": 10**3, "thousand": 10**3, "k": 10**3,
 }
-_SINGLE_LETTER_SCALES = frozenset({"k", "K", "B", "M", "MM"})
+_SINGLE_LETTER_SCALES = frozenset({"k", "K", "B", "M"})
 
 
 def _scale_multiplier(text: str) -> int:
@@ -163,7 +163,8 @@ _REFERENCE_RE = re.compile(
 # Outline numbering at the start of a line: "1. Intro", "2) Next", "### 3. Market", "4.2 Pricing".
 _LIST_NUMBER_RE = re.compile(
     r"(?m)^[ \t]*(?:#{1,6}[ \t]+)?(?:[-*+•][ \t]+)?"
-    r"(?P<num>\(?\d{1,3}[.)][ \t]+(?=\S)|\d{1,2}(?:\.\d{1,2})+\.?[ \t]+(?=[A-ZÀ-Ý]))"
+    r"(?P<num>\(?\d{1,3}[.)][ \t]+(?=\S)|\d{1,2}(?:\.\d{1,2})+\.?[ \t]+(?=[A-ZÀ-Ý][a-zà-ÿ])"
+    r"(?!(?:Million|Billion|Thousand|Milh|Bilh|Mil\b|Mi\b|Bi\b|Tri\b)))"
 )
 
 _CORE_RE = re.compile(r"(?<![\w])\d+(?:[.,]\d+)*")
@@ -377,7 +378,7 @@ def _date_value(year: int | None, month: int, day: int | None) -> str:
 
 
 def _plausible_year(year: int | None) -> bool:
-    return year is None or PLAUSIBLE_YEARS[0] <= year <= PLAUSIBLE_YEARS[1]
+    return year is None or YEAR_RANGE[0] <= year <= YEAR_RANGE[1]
 
 
 def _find_dates(text: str, locale: str, free: Callable[[int, int], bool]) -> list[tuple[int, int, str]]:
@@ -643,6 +644,22 @@ def load_doc(path: Path, locale_override: str | None = None) -> Doc:
 # Matching engine
 # ---------------------------------------------------------------------------
 
+def within_rounding(a: Decimal, a_step: Decimal, b: Decimal, b_step: Decimal) -> bool:
+    """True if the more precise number rounds to the less precise one at the latter's precision.
+
+    Both common rounding conventions are accepted (half-up as in Excel, half-even as in Python),
+    so 6.25 matches 6.3 and 6.2, but 9.5 does not match 9 and 41.7 does not match 41.
+    Numbers of equal precision must be identical.
+    """
+    if a == b:
+        return True
+    if a_step == b_step or a_step == 0 or b_step == 0:
+        return False
+    fine, coarse, step = (a, b, b_step) if b_step > a_step else (b, a, a_step)
+    quotient = fine / step
+    return any(quotient.quantize(Decimal(1), rounding=mode) * step == coarse for mode in (ROUND_HALF_UP, ROUND_HALF_EVEN))
+
+
 class _Index:
     """Targets bucketed by key and sorted by value, so tolerant lookups stay fast on big sheets."""
 
@@ -676,8 +693,8 @@ class _Index:
                 continue
             other = abs(candidate.number) if self.use_abs else candidate.number
             diff = abs(other - value)
-            limit = Decimal(0) if exact else max(token.step, candidate.step) / 2
-            if diff <= limit and (best is None or diff < best_diff):
+            matches = diff == 0 if exact else within_rounding(value, token.step, other, candidate.step)
+            if matches and (best is None or diff < best_diff):
                 best, best_diff = candidate, diff
                 if diff == 0:
                     break
@@ -778,10 +795,11 @@ def _likely_edits(missing: list[Token], extra: list[Token]) -> dict[int, Token]:
 
 
 def _format_notes(doc: Doc, role: str) -> list[str]:
-    words = sum(doc_text.language_scores(" ".join(u["text"] for u in doc.units if not u.get("machine_spans"))))
-    if words < MIN_DOC_WORDS_FOR_FORMAT_NOTE:
-        return []
-    wrong_style = "pt" if doc.language == "en" else "en"
+    pt, en = doc_text.language_scores(" ".join(u["text"] for u in doc.units if not u.get("machine_spans")))
+    winner, loser = (pt, en) if doc.language == "pt" else (en, pt)
+    if winner < MIN_LANGUAGE_EVIDENCE or winner < LANGUAGE_DOMINANCE * loser:
+        return []  # too little or too mixed text to say which number format is expected
+    wrong_style = "en" if doc.language == "pt" else "pt"
     bad = [t for t in doc.tokens if t.style == wrong_style and t.is_numeric]
     if not bad:
         return []

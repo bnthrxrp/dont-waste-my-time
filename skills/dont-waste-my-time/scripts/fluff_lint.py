@@ -23,6 +23,7 @@ Rules (id, severity)
 --------------------
 FILLER (medium)           generic openers and padding ("in today's rapidly changing",
                           "vale ressaltar", "going forward"...). Lists: FILLER_EN, FILLER_PT.
+                          One finding per sentence, listing every phrase found in it.
 UNSUPPORTED_CLAIM (high)  evaluative words (significant, robust, forte, expressivo...) in a
                           sentence with no quantity, and none in the adjacent sentences of
                           the same paragraph. Years and quarter labels do not count as
@@ -465,8 +466,8 @@ def iter_paragraphs(units: list[dict]) -> Iterator[Paragraph]:
             pending = None
 
     for unit in units:
-        if unit.get("code") or unit.get("formula") or unit["kind"] == "chart":
-            continue
+        if unit.get("code") or unit.get("formula") or unit.get("comment") or unit["kind"] == "chart":
+            continue  # code, uncalculated formulas, reviewer comments and chart data are not prose to judge
         slide = unit.get("slide")
         if slide != current_slide:
             current_slide = slide
@@ -509,13 +510,20 @@ def iter_paragraphs(units: list[dict]) -> Iterator[Paragraph]:
 # ---------------------------------------------------------------------------
 
 def check_filler(paragraphs: list[Paragraph], lang: str) -> list[Finding]:
+    """One finding per sentence, listing every filler phrase in it (a stack of them is one problem, not three)."""
     findings = []
     for para in paragraphs:
-        for match in FILLER_RES[lang].finditer(para.text):
-            hint = FILLER_HINT_MAP.get(_normalise_phrase(match.group(0)), FILLER_DEFAULT_HINT[lang])
+        for sentence, offset in split_sentences(para.text):
+            matches = [m for m in FILLER_RES[lang].finditer(sentence)]
+            if not matches:
+                continue
+            phrases = [m.group(0) for m in matches]
+            hints = [FILLER_HINT_MAP[_normalise_phrase(p)] for p in phrases if _normalise_phrase(p) in FILLER_HINT_MAP]
+            quoted = ", ".join(f"'{p}'" for p in phrases)
+            label = "Filler" if lang == "en" else "Enchimento"
             findings.append(Finding(
-                "FILLER", "medium", para.location, make_snippet(para.text, match.start(), match.end()),
-                f"Filler: '{match.group(0)}'. {hint}", {"matched": match.group(0)}))
+                "FILLER", "medium", para.location, make_snippet(sentence, matches[0].start(), matches[-1].end()),
+                f"{label}: {quoted}. {hints[0] if hints else FILLER_DEFAULT_HINT[lang]}", {"matched": phrases}))
     return findings
 
 
