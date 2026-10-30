@@ -96,7 +96,7 @@ Default to grey plus one accent on what the title names. Add a color only when i
 - **At most 6-7 categorical colors per chart (heuristic).** Beyond that, group the tail into "Other", split into small multiples, or use direct labels in one color.
 - **Hard: contrast ≥ 3:1** for every graphical object the reader needs (bars, lines, markers) against the background, and **≥ 4.5:1 for text** (3:1 for large text: 18 pt, or 14 pt bold). Thresholds are not rounded: 4.49:1 fails. A mark is exempt when its value is printed beside it in text that passes; decorative gridlines are exempt.
   - Palette colors don't contrast with each other (blue vs vermilion is 1.3:1): separate adjacent segments with a thin white gap.
-  - Thin lines and small markers look fainter than their nominal contrast: give them the darker colors (blue, vermilion, black), never sky blue, orange or yellow.
+  - Thin lines and small markers look fainter than their nominal contrast: on white, give them the darker colors (blue, vermilion, black), never sky blue, orange or yellow.
   - Write data labels in #222222, not in the series color, unless that color reaches 4.5:1: #0072B2 does on white; #009E73, #D55E00 and #8C8C8C don't.
 - Ordered values (low to high): one hue, light to dark. Values around a meaningful midpoint (zero, target, average): two hues diverging from a neutral color at that midpoint. Never a rainbow scale.
 
@@ -178,13 +178,31 @@ On embellishment the evidence is thin and mixed. One small study found embellish
 
 ## Evidence notes
 
-- **Encoding ranking**: Heer & Bostock 2010 (crowd replication of Cleveland & McGill: position > length > angle/area, for proportion judgments). The place of color intensity and the stacked-bar implication are inferences from that ranking. Pie cues, donut ≈ pie, angle weakest, and distorted pie variants: Skau & Kosara 2016. Subset comparison is slow; working memory, conventions, audience: Franconeri et al. 2021 (abstract).
-- **Zero baseline**: Correll, Bertini & Franconeri 2020 (truncated bars exaggerate perceived effect size even when truncation is cued; for trend messages, refusing to zoom can also mislead; size the axis to the meaningful effect). Datawrapper (bars from zero; dots and lines may start elsewhere).
-- **Dual axes**: Datawrapper practitioner guidance resting on one small study. The consensus is stronger than the evidence, hence a default, not a Hard rule.
-- **Overlay vs small multiples**: Javed et al. 2010; Ondov et al. 2018. Results depend on task and visual span; "about 4 lines" is a heuristic.
-- **Titles and focus**: Kong et al. 2018 (title slant shapes the perceived message; viewers think charts are neutral). Kim et al. 2021 (readers adopt a caption's point only when the chart emphasizes it; line charts). Ajani et al. 2021 (decluttering raises professionalism; adding a headline, a highlight and annotations improves clarity and memory of the pattern; memory tasks only).
-- **Embellishment**: Bateman et al. 2010 (no accuracy loss, better recall; the authors caution against generalizing). Borkin et al. 2013 (unusual types and recognizable objects aid memorability).
-- **Uncertainty**: Correll & Gleicher 2014 (error bars often unlabeled; containment bias; the encoding changes decisions). The paper recommends gradient or violin plots; dot + interval is an adaptation for executive readers, not a tested form.
-- **Color**: WCAG 2.1 SC 1.4.11 (3:1 for needed graphics, strict) and SC 1.4.1 (not color alone). The 4.5:1 text threshold is SC 1.4.3, a standard not covered by the research base. Okabe-Ito hex values, ~8% of men with a color-vision deficiency, direct labels beyond ~8 categories: Wilke (ch. 19). Contrast ratios are computed with the WCAG luminance formula. The 6-7 color ceiling is a heuristic, tighter than Wilke's because only five Okabe-Ito colors pass 3:1 on white. The favorable/unfavorable pair was checked with a deficiency simulation during drafting.
-- **Business notation**: IBCS (Lapajne 2015): consistent encodings for scenarios and variances, absolute and relative variance (ΔPY, ΔPY %). The table's specific encodings are an IBCS-inspired convention, not checked against IBCS 2.0 or ISO 24896 text.
-- **Convention, not tested in the research base**: forms for distribution, relationship, ranking and maps; no 3D; time axes; n and table-size thresholds; table and number formatting; gauges.
+When you explain a chart choice to the user, claim no more than these notes support. Don't write "pies are always bad", "dual axes are banned" or "decluttering improves comprehension"; a threshold marked heuristic is a heuristic. Most studies below are small or crowdsourced.
+
+- **Encoding ranking**: Heer & Bostock 2010, a crowd replication of Cleveland & McGill on proportion judgments. Position on a common scale was best, and the position and length types kept their order. Contrary to theory, angle was not shown to be worse than length; area was worse than angle. The place of color intensity and the stacked-bar rule are inferences.
+- **Pies**: Skau & Kosara 2016 (two-segment charts, n = 92): angle-only designs were least accurate; donut ≈ pie. They reason about exploded, varying-radius, icon and nested pies but don't test them, so avoiding those is a conservative choice. No slice-count threshold comes from this work.
+- **Working memory and conventions**: Franconeri et al. 2021 (abstract only): comparing subsets is slow; follow familiar conventions; fit the audience.
+- **Zero baseline**:
+  - Correll, Bertini & Franconeri 2020 (crowd samples of 25-40): truncated bars exaggerate perceived effect size even when the truncation is cued; for trend messages, refusing to zoom can also mislead. The authors reject "every chart must include 0".
+  - The bar rule therefore rests mainly on length encoding plus practitioner consensus (Datawrapper 2021).
+  - Witt 2019 (small samples, scientific effect sizes): ranges set just beyond the data inflated perceived effects, and full ranges shrank them. This supports sizing line axes to the meaningful change; its 1.5 SD rule doesn't transfer to business KPIs.
+- **Dual axes**: no controlled study of two-measure dual y-axes was found. Datawrapper 2018 argued against them, citing Isenberg et al. 2011, but that study tested focus-plus-context dual-scale charts, not two measures. Datawrapper 2026 reversed its product stance: dual axes keep the absolute levels that indexing loses and suit questions about when each series peaked. It kept its concerns for general audiences. The rule here is a practitioner default with one named exception, not a finding.
+- **Overlay vs small multiples**: Javed et al. 2010 (16 participants; 2, 4 and 8 series) and Ondov et al. 2018 (pairwise comparisons). Results depend on task and span; "about 4 lines" is a heuristic.
+- **Titles and focus**:
+  - Kong et al. 2018 (about 100 per experiment): title slant shapes the perceived message, and viewers think charts are neutral. Banning loaded words extends the finding.
+  - Kim et al. 2021 (2,168 participants, line charts): readers adopt a caption's point only when the chart emphasizes it.
+  - Ajani et al. 2021 (24 undergraduates, 10-second views): decluttering raised professionalism, not comprehension. Focus made the highlighted conclusion 2.5-3x as likely to be recalled. Some participants felt focused charts had an agenda, hence findings, not recommendations, in chart titles.
+- **Embellishment**: Bateman et al. 2010 (n = 20, one designer's style): no accuracy loss and better recall after 2-3 weeks; the authors caution against generalizing. Borkin et al. 2013: unusual types are more memorable, measured on single images, not decisions.
+- **Uncertainty**:
+  - Correll & Gleicher 2014 (review of 46 papers; 240 crowd participants): error bars are often unlabeled, bars invite containment bias, and the encoding changes decisions. They favor gradient or violin plots; dot + interval is an adaptation for executive readers, not a tested form.
+  - Kale, Kay & Hullman 2020: showing means with uncertainty biases judgments toward discounting the uncertainty.
+- **Color**:
+  - WCAG 2.1 SC 1.4.11: 3:1 for needed graphics; exempt when passing text conveys the same information. SC 1.4.1: not color alone. SC 1.4.3: 4.5:1 for text, 3:1 for large text, not rounded. Applying web criteria to slides and print is an extension.
+  - Okabe-Ito hex values and direct labels beyond about 8 categories: Wilke ch. 19. Darker colors for thin lines: Okabe & Ito.
+  - Prevalence (Birch 2012, via validation): about 8% of European-ancestry men, 4-6.5% of Chinese and Japanese men, 0.4-0.5% of women.
+  - Contrast ratios were computed with the WCAG luminance formula and recomputed independently.
+  - The 6-7 color ceiling is a heuristic, tighter than Wilke's because only five Okabe-Ito colors pass 3:1 on white.
+  - The favorable/unfavorable pair was checked with a deficiency simulation while drafting.
+- **Business notation**: IBCS (Lapajne 2015): consistent encodings for scenarios and variances; absolute and relative variance (ΔPY, ΔPY %). ISO 24896 "Notation for business reporting" was published on 11 June 2026, based mainly on the UNIFY and CHECK parts of the IBCS SUCCESS rules; IBCS Standards 2.0 was released the same day and is fully aligned with it (IBCS site). The table's specific encodings come from vendor pages that disagree on details (actual black vs dark grey). They were not checked against the paywalled standard.
+- **Convention, not tested in the research base**: forms for distribution, relationship, ranking and maps; sorting and "Other" last; stacked bars; legends vs direct labels; tables vs charts; sequential and diverging palettes; no 3D; time axes; thresholds for n, labels and table size; number formatting; gauges.

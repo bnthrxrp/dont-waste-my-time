@@ -193,7 +193,7 @@ _UNIT_SUFFIX_RE = re.compile(
       | (?P<pp>\s?(?i:p\.\s?p\.?|pp\b|pontos?\s+percentuais?|ponto\s+percentual|percentage\s+points?|
                   percent\s+points?|pts\b|points?\b(?!\s+of\s+sale)|pontos?\b(?!\s+de\s+venda)))
       | (?P<mult>[x×](?![^\W\d_]))
-      | (?P<cur>\s?(?:de\s+)?(?i:reais|real|d[óo]lares?|dollars?|euros?|libras?|pounds?|BRL|USD|EUR|GBP)\b)
+      | (?P<cur>\s?(?:de\s+)?(?i:reais|d[óo]lares?|dollars?|euros?|libras?|pounds?|BRL|USD|EUR|GBP)\b)
     )?""",
     re.X,
 )
@@ -623,12 +623,17 @@ def _share_range_suffix(tokens: list[Token], text: str) -> None:
     for first, second in zip(tokens, tokens[1:]):
         if first.kind != "number" or second.kind != "number" or not _RANGE_JOINER.match(text[first.end:second.start]):
             continue
+        if first.unit or first.unit_word:
+            continue  # "grew 6.2% to $48.7M" is two quantities, not a range sharing one suffix
         if first.scale == 1 and second.scale != 1:
             first.value, first.step, first.scale = first.value * second.scale, first.step * second.scale, second.scale
-        if not first.unit and second.unit in ("%", "x"):
+        # "pp" is skipped when it came from basis points: the first number's value would need dividing by 100.
+        if not first.unit and (second.unit in ("%", "x") or (second.unit == "pp" and "bp" not in second.raw.lower())):
             first.unit = second.unit
         if not first.currency and second.currency:
             first.currency = second.currency
+        elif not second.currency and first.currency:
+            second.currency = first.currency
 
 
 # ---------------------------------------------------------------------------

@@ -52,7 +52,9 @@ class TempFiles(unittest.TestCase):
     def trace(self, deliverable_text, *source_texts, **kwargs):
         deliverable = self.write("deliverable.md", deliverable_text)
         sources = [self.write(f"source{i}.md", s) for i, s in enumerate(source_texts)]
-        return nc.trace_docs(nc.load_doc(deliverable), [nc.load_doc(s) for s in sources], **kwargs)
+        # placeholders_aside mirrors what the CLI does for trace
+        return nc.trace_docs(nc.load_doc(deliverable, placeholders_aside=True),
+                             [nc.load_doc(s, placeholders_aside=True) for s in sources], **kwargs)
 
 
 class Normalisation(unittest.TestCase):
@@ -321,6 +323,113 @@ class Trace(TempFiles):
 
     def test_one_source_number_can_back_many_deliverable_numbers(self):
         self.assertEqual(self.untraced("Revenue $86.2M. Again, $86.2M. And $86.2M."), [])
+
+
+class TraceLooseMatching(TempFiles):
+    """Regressions from real runs: loose matching must relax exactly one thing and never match garbage."""
+
+    REPORT = (
+        "Year-over-year net sales growth of +4.0% breaks down as: price +6.8%, volume -3.1%, mix +0.5%.\n"
+        "The budget assumed price +4.5% and volume +1.5%.\n"
+        "Average weekly sell-out at these customers was $7.9M in Q3. The agreed range is 4 to 6 weeks of supply.\n"
+        "Trade spend reached $58.4M YTD (+18.0%), equal to 14.1% of gross sales (prior year: 12.4%).\n"
+        "| Brand | YTD net sales ($M) | Var. vs PY |\n|---|---:|---:|\n"
+        "| Digestia | 84.7 | -12.1% |\n| **Total** | **412.6** | **+4.0%** |\n"
+    )
+
+    def untraced(self, deliverable, source):
+        return [u["raw"] for u in self.trace(deliverable, source)["untraced"]]
+
+    def loose(self, deliverable, source):
+        return {e["number"]["raw"]: e["matched_via"] for e in self.trace(deliverable, source)["traced_loosely"]}
+
+    def test_derived_figures_do_not_match_unrelated_percentages_or_counts(self):
+        deliverable = ("Price delivered about $14M of the growth.\n"
+                       "Digestia lost about $12M versus prior year.\n"
+                       "Getting back to 6 weeks removes about $6M of Q4 orders.\n")
+        # $14M must not match 14.1% (currency vs %, and rounding); $12M must not match -12.1%;
+        # $6M must not match the "6" in "4 to 6 weeks" (explicit unit word; whole number below 10).
+        raws = self.untraced(deliverable, self.REPORT)
+        for derived in ("$14M", "$12M", "$6M"):
+            self.assertIn(derived, raws)
+        self.assertEqual(self.loose(deliverable, self.REPORT), {})
+
+    def test_legitimate_loose_matches_still_work_and_say_why(self):
+        deliverable = "Sales are $412.6M YTD; Digestia fell 12.1% to $84.7M."
+        loose = self.loose(deliverable, self.REPORT)
+        self.assertIn("scale shifted by 10^-6", loose["$412.6M"])
+        self.assertIn("scale shifted by 10^-6", loose["$84.7M"])
+        self.assertEqual(loose["12.1%"], "sign differs")
+        self.assertEqual(self.untraced(deliverable, self.REPORT), [])
+        summary = self.trace(deliverable, self.REPORT)["summary"]
+        self.assertEqual((summary["traced"], summary["traced_loosely"], summary["untraced"]), (0, 3, 0))
+
+    def test_loose_matches_never_combine_relaxations(self):
+        # scale shift AND unit change, or sign AND scale shift: no match.
+        self.assertEqual(self.untraced("Margin fell $14M.", "Margin 14.1%."), ["$14M"])
+        self.assertEqual(self.untraced("Growth was -$412.6M.", "Revenue 412.6 in the table."), ["-$412.6M"])
+        # percent vs bare, p.p. vs percent, currency vs percent: never across explicit unit kinds.
+        self.assertEqual(self.untraced("Up 22%.", "Value 22 in the table."), ["22%"])
+        self.assertEqual(self.untraced("Up 2.4 pp.", "Growth 2.4%."), ["2.4 pp"])
+        self.assertEqual(self.untraced("Cost $14.1M.", "Share 14.1%."), ["$14.1M"])
+
+    def test_loose_matches_use_identical_digits_no_rounding(self):
+        self.assertEqual(self.untraced("Sales of $412M.", "Table: 412.6"), ["$412M"])      # coarser than the source
+        self.assertEqual(self.untraced("Sales of $412.60M.", "Table: 412.6"), [])         # same digits
+        self.assertEqual(self.untraced("Margin of 12.1%.", "Margin -12.14%."), ["12.1%"])  # sign + rounding
+
+    def test_whole_numbers_below_ten_match_exactly_or_not_at_all(self):
+        self.assertEqual(self.untraced("We have 2 KAMs.", "Timeout 1500 seconds."), ["2"])
+        self.assertEqual(self.untraced("We have 2 KAMs.", "We have 2.4 KAMs."), ["2"])      # no rounding either
+        self.assertEqual(self.untraced("We have 2 KAMs.", "We have 2 KAMs."), [])
+        self.assertEqual(self.untraced("Ramp starts at 0%.", "Gap of 3 points."), ["0%"])
+        self.assertEqual(self.untraced("A $2M gap.", "Table: 2"), ["$2M"])
+        self.assertEqual(self.untraced("Growth of -3%.", "Growth 3%."), ["-3%"])            # sign relaxation also off
+
+    def test_number_followed_by_a_unit_word_is_not_a_bare_table_value(self):
+        self.assertEqual(self.untraced("A $14M build.", "The range is 4 to 14 weeks."), ["$14M"])
+        self.assertEqual(self.untraced("A $14M build.", "| Total | 14 |\n"), [])
+
+    def test_tbd_placeholders_are_ignored_and_bare_brackets_reported_separately(self):
+        deliverable = ("We have [45] regional chains with [$X M] in sales, up [+11%].\n"
+                       "Owner: [TBD: 45 chains, owner Maria, by 2026-11-30].\n"
+                       "Also [about 60%] of target and 14 real stores.\n")
+        result = self.trace(deliverable, "We run 14 stores.")
+        self.assertEqual([u["raw"] for u in result["untraced"]], ["60%"])   # TBD and bare brackets are not numbers
+        self.assertEqual([b["raw"] for b in result["bracketed_values"]], ["[45]", "[$X M]", "[+11%]"])
+        self.assertEqual(result["summary"]["bracketed_values"], 3)
+        self.assertEqual(result["bracketed_values"][0]["location"], "line 1")
+
+    def test_yaml_front_matter_is_ignored_in_sources_and_deliverables(self):
+        source = "---\ntags: [memo]\nmax_turns: 30\ntimeout_seconds: 1500\n---\n\nWe want 3 additional KAMs.\n"
+        deliverable = "---\ntitle: x\nmax_turns: 30\n---\n\nHire 3 KAMs. The cap is $1.5M.\n"
+        self.assertEqual(self.untraced(deliverable, source), ["$1.5M"])  # 1500 and 30 were metadata, not data
+        plain_rule = "---\n\nA document that starts with a rule and mentions 4500 units.\n\n---\n"
+        self.assertEqual(self.untraced("4500 units", plain_rule), [])    # not YAML, so it is content
+
+    def test_real_cfo_memo_case(self):
+        source = ("---\ntags: [dont-waste-my-time, memo]\nmax_turns: 30\ntimeout_seconds: 1500\n---\n\n"
+                  "I need to get our CFO's approval to hire 3 additional key account managers.\n")
+        deliverable = ("**The channel is under-covered.** We have [2] KAMs covering [45] regional chains.\n"
+                       "Cost of waiting: decisions locked for about 12 months. Q1 0%, Q2 25%.\n"
+                       "Hire 3 KAMs for $585K per year. The 2 KAMs today cost $1.5M.\n")
+        result = self.trace(deliverable, source)
+        raws = [u["raw"] for u in result["untraced"]]
+        for garbage_victim in ("2", "0%", "$1.5M"):
+            self.assertIn(garbage_victim, raws)
+        self.assertEqual(result["summary"]["traced_loosely"], 0)
+        self.assertEqual([b["raw"] for b in result["bracketed_values"]], ["[2]", "[45]"])
+
+    def test_outline_numbers_in_bold_and_ranges_with_one_suffix(self):
+        self.assertEqual(norm("**2. Shipments are ahead**\n**5. Somnis**"), [])
+        self.assertEqual(norm("The destock estimate is ($6-14M) and 20-25%."), ["USD 6000000", "USD 14000000", "20%", "25%"])
+
+    def test_result_line_reports_three_counts(self):
+        deliverable = self.write("d.md", "Sales are $412.6M, price $14M.\n")
+        source = self.write("s.md", "| Total | 412.6 |\n")
+        out = h.run_script("numbers_check.py", "trace", deliverable, "--sources", source).stdout
+        self.assertIn("RESULT: 0 traced, 1 loosely traced (verify), 1 untraced", out)
+        self.assertIn("Loosely traced (1)", out)
 
 
 class Cli(TempFiles):
