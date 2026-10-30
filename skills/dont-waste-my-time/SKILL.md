@@ -67,7 +67,7 @@ Use the lightest method that solves the problem. Don't force a consulting framew
 - **Plain, specific language.** Short sentences, active voice, concrete nouns, no corporate filler, no generic AI phrasing. Use prose when the logic is a chain of reasons; use bullets only for parallel items.
 - **Caveats where they bite.** Put a material limitation next to the number it qualifies, not in a pile at the end. Don't delete caveats to save words.
 - **Length follows the detail level**: see the budgets in [references/briefing.md](references/briefing.md#length-budgets). Never pad to look thorough.
-- Write in the user's language unless the brief or task says otherwise.
+- Write in the user's language unless the brief or task says otherwise. When translating, even quickly, translate business terms by meaning and convert locale conventions: pt-BR "R$ 12,3 mi" → "R$12.3M", "1,2 p.p." → "1.2 pp", "3T25" → "Q3 2025", dates to the target format. Never change a value.
 
 ## 5. Evidence and integrity (non-negotiable)
 
