@@ -82,6 +82,7 @@ import doc_text  # noqa: E402  (shared extraction; must follow the sys.path twea
 SNIPPET_RADIUS = 45          # characters of context shown on each side of a number
 MIN_DOC_WORDS_FOR_FORMAT_NOTE = 20   # below this, language detection is too weak to call a format "wrong"
 MAX_FORMAT_NOTES = 5         # examples listed per format note
+MAX_LOOSE_LISTED = 25        # loosely traced numbers listed in the text report (all are in --json)
 LOCATION_OVERLAP_MIN = 0.5   # per-location counts are only meaningful if half the locations line up
 YEAR_RANGE = (1900, 2100)    # four-digit integers in this range are treated as years
 BPS_PER_PP = 100             # 1 percentage point = 100 basis points
@@ -1033,8 +1034,15 @@ def render_trace(result: dict) -> str:
             if item.get("possible_basis"):
                 lines.append(f"      possible basis (verify, then label it as derived): {item['possible_basis']}")
     if result["traced_loosely"]:
-        lines.extend(["", f"Info: {len(result['traced_loosely'])} number(s) matched a source only after ignoring "
-                          "unit, sign or a 10^3 scale shift (see --json for the list)."])
+        # A loose match can be a coincidence (a derived "-10.9%" equals an unrelated "10.9 kt"), so show them.
+        lines.extend(["", f"Loosely traced ({len(result['traced_loosely'])}): matched a source number only after ignoring "
+                          "unit, sign or a 10^3 scale shift. Check each is really the same quantity:"])
+        for entry in result["traced_loosely"][:MAX_LOOSE_LISTED]:
+            number = entry["number"]
+            lines.append(f"  - {number['raw']!r} at {number['location']}  ~  {entry['source_number']!r} at "
+                         f"{entry['source_location']}  ({entry['matched_via']})")
+        if len(result["traced_loosely"]) > MAX_LOOSE_LISTED:
+            lines.append(f"  ... {len(result['traced_loosely']) - MAX_LOOSE_LISTED} more (see --json)")
     lines.extend(["", "Notes"] + [f"  - {n}" for n in result["notes"]])
     return "\n".join(lines)
 
