@@ -20,7 +20,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WS = Path(os.environ.get("DWMT_WORKSPACE", "/home/user/dwmt-workspace"))
+WS = Path(os.environ.get("DWMT_WORKSPACE", str(Path.home() / "dwmt-workspace")))
 REDACT = [
     (re.compile(r"dont-waste-my-time:dont-waste-my-time"), "[skill]"),
     (re.compile(r"dont[-_ ]waste[-_ ]my[-_ ]time", re.I), "[project]"),

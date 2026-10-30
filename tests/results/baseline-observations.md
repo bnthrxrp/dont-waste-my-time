@@ -1,6 +1,6 @@
 # Baseline observations (RED phase): Claude Code without the skill
 
-Date: 2026-10-29. Harness: `tests/run_evals.py --mode without --iteration baseline` (isolated headless `claude -p`, default model claude-opus-5-5, scoped tool allowlist). Transcripts and outputs: `$DWMT_WORKSPACE/baseline/` (default `/home/user/dwmt-workspace`, outside the repo; not committed).
+Date: 2026-10-29. Harness: `tests/run_evals.py --mode without --iteration baseline` (isolated headless `claude -p`, default model claude-opus-5-5, scoped tool allowlist). Transcripts and outputs: `$DWMT_WORKSPACE/baseline/` (this run: `/home/user/dwmt-workspace`, outside the repo; not committed).
 
 ## Headline
 

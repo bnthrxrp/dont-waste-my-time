@@ -32,7 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 EVALS = ROOT / "evals"
 # Outside the repo so test sessions cannot see evals/ (graders) or other repo files.
-DEFAULT_WORKSPACE = Path(os.environ.get("DWMT_WORKSPACE", "/home/user/dwmt-workspace"))
+DEFAULT_WORKSPACE = Path(os.environ.get("DWMT_WORKSPACE", str(Path.home() / "dwmt-workspace")))
 
 # Variables that tie a child process to the parent remote session's event stream.
 ISOLATE_ENV = [
