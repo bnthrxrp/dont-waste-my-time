@@ -22,7 +22,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WS = Path(os.environ.get("DWMT_WORKSPACE", str(Path.home() / "dwmt-workspace")))
 REDACT = [
+    # Run paths differ between iterations (and earlier runs lived inside the repo): normalize them all.
+    (re.compile(r"/home/user/[^\s\"'`)]*?/(?=work\b)"), "<run>/"),
+    (re.compile(r"/home/user/[^\s\"'`)]*"), "<path>"),
+    (re.compile(r"/tmp/claude-0/-home-user-[\w.-]*"), "<scratch>"),
+    (re.compile(r"-home-user-[\w.-]*"), "<scratch>"),
     (re.compile(r"dont-waste-my-time:dont-waste-my-time"), "[skill]"),
+    (re.compile(r"dont[-_ ]?waste[-_ ]?my[-_\w]*", re.I), "[project]"),
+    (re.compile(r"dwmt[-_\w]*", re.I), "[ws]"),
+    (re.compile(r"\b(iter-\d+[-\w]*|baseline[-\w]*)\b"), "[iter]"),
     (re.compile(r"dont[-_ ]waste[-_ ]my[-_ ]time", re.I), "[project]"),
     (re.compile(r"with(out)?_skill"), "run"),
     (re.compile(r"\$\{CLAUDE_SKILL_DIR\}|/skills/\[project\]/(references|scripts)/"), "<skill-dir>/"),
