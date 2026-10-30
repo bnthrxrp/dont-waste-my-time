@@ -1,0 +1,9 @@
+{
+  "winner": "tie",
+  "margin": "slight",
+  "reasons": [
+    "Both decks pass all 7 assertions: 6 slides, 61/61 numbers identical, terms translated by meaning, IQVIA caveat kept, notes translated, headline/table discrepancy flagged and left unchanged, no pre-translation questionnaire.",
+    "A's edge: more rigorous verification, consistent 'Q3 2025' style and the R$ symbol, 'Division' for Diretoria; B's edge: no stray Portuguese on slides, slide 4 title keeps 'rate', no trailing question.",
+    "Differences are cosmetic (R$ vs BRL, 'positivação' in parentheses vs POS rate, 'Q3 '25' vs 'Q3 2025'); neither would change what the presenter does next, so the runs are effectively equal in executive usefulness."
+  ]
+}

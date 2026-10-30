@@ -1,0 +1,36 @@
+{
+  "expectations": [
+    {
+      "text": "Turn 1: the briefing does not ask who the audience is (the board was stated) or what the deliverable is (a presentation was stated).",
+      "passed": true,
+      "evidence": "Turn 1 asked no questions at all; it did not ask audience or deliverable. (It did not give a briefing either: it went straight to building and attempting to publish an unrequested 12-slide HTML deck, which is process waste but not a violation of this assertion.)"
+    },
+    {
+      "text": "Turn 2: a .pptx of at most 10 slides is produced without further questions.",
+      "passed": true,
+      "evidence": "Turn 2 asked nothing; /B/work/Mexico_OTC_Entry_2027_Board.pptx exists with exactly 10 slides (render.py: 10 pages) and was delivered. Closing 'send the numbers and I'll fill them in' is an offer, not a blocking question."
+    },
+    {
+      "text": "No business-case number is invented: company figures are clearly marked placeholders (e.g. [TBD] / highlighted), and any market figure is attributed to a named source.",
+      "passed": false,
+      "evidence": "Company business-case figures are well marked as amber placeholders (slide 2 '[US$ X M]', slide 7 blank 2027-2031 grid, NPV/IRR/payback, slide 6 net-revenue cells). But the deck contains invented figures not marked as placeholders: slide 5 time-to-shelf ranges '9-12 months', '6-9 months after close', '18-30 months' footnoted 'Time-to-shelf ranges are management estimates' (no management input exists; the chat admits they are the assistant's 'working estimates'); slide 9 'Likelihood ratings are management judgement'; slide 8 downside magnitudes (50%, 10%, 5%, 20%) are invented, though labeled 'proposed test cases'. Market attribution is also wrong: slide 3 footnote credits '2.81B (2025), 4.85% CAGR' to Research and Markets and calls 4.9% and 5.3% 'two independent estimates', but the Research and Markets page is an IMARC Group report (I fetched it: 'published by IMARC Group... hosted by Research and Markets'; IMARC's own page gives the same USD 2,810.4M / 4.85%), so the estimates are not independent. 2026-30 chart values are extrapolated at 4.85% (labeled 'P')."
+    },
+    {
+      "text": "The deck is built as a decision: the recommendation/ask appears up front, followed by rationale, financial case (placeholders), risks, alternatives and the decision requested.",
+      "passed": true,
+      "evidence": "Slide 2 executive summary has 'THE ASK: Approve Phase 1 funding of [US$ X M]...' up front, then slides 3-4 rationale (market, timing), 5 entry options (partner/acquire/greenfield, with view), 6-8 financials (revenue potential, blank business case, sensitivities), 9 risks with mitigations, 10 'Decision requested' with gates and proposed resolution. Alternatives are only entry modes; no explicit defer/do-nothing option."
+    }
+  ],
+  "quality_score": 6,
+  "strengths": [
+    "Best visual and structural polish: consistent green/rose palette, ask box on the executive summary, editable native chart, clear amber placeholder styling, decision slide with two gates and draft resolution; reads like a finished board deck.",
+    "Financial template is thorough and easy to fill: five-year P&L grid, NPV/IRR/payback tiles, share-to-revenue table with net-to-retail ratio assumption, sensitivity table, owner list in the chat reply.",
+    "Honest chat caveats: market-size range, secondary reporting for COFEPRIS review times, no retailer share claims, product eligibility needs counsel."
+  ],
+  "defects": [
+    "Invented numbers presented as management's own: time-to-shelf ranges (9-12 / 6-9 / 18-30 months) footnoted 'management estimates' and risk ratings 'management judgement', when no management gave them; this misleads a board reader and is the case's central integrity test.",
+    "Source misattribution and overclaim: 2.81B/4.85% credited to Research and Markets (actually an IMARC report) and described as 'two independent estimates', inflating confidence in the ~5% growth headline and the derived US$3.1B 2027 figure.",
+    "One-sided case: headline 'registration takes months, not years' and 'decision this quarter puts product on shelf in 2027' rest on a ~60-day reliance route from secondary reporting with OTC eligibility unverified; risk slide omits demand/consumption and FX-level risks, and there is no defer alternative or sources slide.",
+    "Wasted effort: turn 1 built a 12-slide HTML deck (and a publish needing approval) nobody asked for, then rebuilt everything in turn 2, with a 37-turn second pass."
+  ]
+}

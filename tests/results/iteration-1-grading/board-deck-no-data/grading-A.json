@@ -1,0 +1,37 @@
+{
+  "expectations": [
+    {
+      "text": "Turn 1: the briefing does not ask who the audience is (the board was stated) or what the deliverable is (a presentation was stated).",
+      "passed": true,
+      "evidence": "Turn-1 reply opens 'Already clear: board deck, objective is approval to enter the Mexican OTC market in 2027' and asks only: company/products, internal numbers, research source, detail level, fixed constraints. Audience and deliverable are not asked. (It is a 5-item questionnaire with defaults, more than minimal, but the asserted questions are absent.)"
+    },
+    {
+      "text": "Turn 2: a .pptx of at most 10 slides is produced without further questions.",
+      "passed": true,
+      "evidence": "Turn 2 asked nothing; /A/work/Mexico_OTC_Entry_2027_Board.pptx exists, doc_text/render show exactly 10 slides (render.py: 10 pages). Closing 'To finish it, I need your company name and products' is a hand-off note, not a blocking question."
+    },
+    {
+      "text": "No business-case number is invented: company figures are clearly marked placeholders (e.g. [TBD] / highlighted), and any market figure is attributed to a named source.",
+      "passed": true,
+      "evidence": "Every company figure is a highlighted placeholder: slide 7 table has [TBD] in all Low/Base cells (Gate 1 spend, investment, revenue, margin, break-even, NPV at [WACC], IRR, share, value kept); slide 1 '[Gate 1 budget, US$ M, owner: Finance]', '[N SKUs]', Investment [US$ M], Break-even [year]; slide 6 costs '[US$ M]', '[x]% margin'. Market figures are attributed on-slide: IMARC US$2.81B (2025, verified on IMARC page: 'USD 2,810.4 Million in 2025', CAGR 4.85%), RX Mexico/Euromonitor US$2.96B via Mexico Business News (verified), 41% OECD out-of-pocket, GDP +1.40%/+1.77% Banxico survey, Genomma -6.4%, store counts. Derived numbers are shown as calculated (17,212 / 7,212; ~21 business days per month). Qualitative Low/High/Highest cells are labeled 'qualitative'. Caveats stated ('no official figure', 'low confidence', undisclosed scope, non-independence)."
+    },
+    {
+      "text": "The deck is built as a decision: the recommendation/ask appears up front, followed by rationale, financial case (placeholders), risks, alternatives and the decision requested.",
+      "passed": true,
+      "evidence": "Slide 1 (title is the proposal) has 'Decision required: Approve Gate 1', Recommendation, key numbers, key risks. Then slide 2 market, 3 channels, 4 macro/case against, 5 regulatory timeline, 6 entry options incl. 'D. Defer to 2028' (alternatives), 7 financial case placeholders, 8 risks with stop triggers/owners, 9 'Decision requested' with proposed resolution and next 90 days, 10 sources."
+    }
+  ],
+  "quality_score": 8,
+  "strengths": [
+    "Integrity of every claim: all market numbers carry named source and date on the slide, caveats are explicit (no official market size, vendor scope undisclosed, store counts dated 2023-25, reliance pathway may not cover OTC); I confirmed IMARC 2.81B/4.85% and the 2.96B Mexico Business News figure; no invented company numbers or invented ranges.",
+    "Built as a real decision paper: ask, recommendation, key numbers and risks on slide 1; alternatives including defer; gated approval with stop triggers, owners and a draft resolution; slide 7 financial case is a clean [TBD] template with named owners and a market-share sanity test.",
+    "Includes the case against (weak consumption, Genomma -6.4%, Kenvue consolidation, registration 6-9 months as planning basis) rather than selling the idea, which is what a board needs; flags that the fast reliance route may not cover OTC.",
+    "Zero extra turns beyond the single briefing; exactly 10 slides; every slide has an action title and speaker notes."
+  ],
+  "defects": [
+    "Visually plain and text-dense (default white slides, long action titles, slide 1 is a text table rather than a cover/exec summary); less board-ready polish than B.",
+    "Turn-1 briefing is a 5-item questionnaire (company, numbers, research, detail, constraints) with defaults, heavier than needed given the case; long run (47 turns, ~11 min) with sub-agent research and verification.",
+    "Stale or weak evidence on some slides (OECD 41% from a 2021 article, Kenvue ~US$3.8B all-category, Genomma one quarter); labeled as such but dilutes slide 4.",
+    "Slide 5 timeline hinges on a consultancy estimate (120-180 business days) and uses '[months, owner: Regulatory]' for dossier prep, so no firm end-to-end launch date."
+  ]
+}

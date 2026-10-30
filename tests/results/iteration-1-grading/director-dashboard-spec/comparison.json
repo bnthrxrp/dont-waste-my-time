@@ -1,0 +1,10 @@
+{
+  "winner": "B",
+  "margin": "clear",
+  "reasons": [
+    "B passes all 8 assertions; A passes 5 of 8, failing on explicit KPI contract fields (no polarity, per-KPI latency), non-happy-path states, and invented targets.",
+    "Integrity of thresholds: A silently builds an OOS red/amber/green scale (8%), net sales 95%, trade spend 8.0% and a dozen other bands with no 'proposed' or TBC label, so BI would implement unapproved logic as policy; B marks the few suggested bands as proposed, leaves the rest [TBD] with owners, and shows no OOS status at all.",
+    "B's KPI blocks (Question, Formula, Source, Latency, Target, Polarity, Status rule, Owner, Caveats), states table, filter-compatibility matrix and acceptance tests make it more buildable and testable; A is tighter and quicker to read but leaves states and polarity implicit.",
+    "Both start from director decisions, separate weekly from monthly data, and handle audit skew and outlet duplicates well; B's extra length and TBD volume and slower process are real costs but do not outweigh its correctness advantage."
+  ]
+}

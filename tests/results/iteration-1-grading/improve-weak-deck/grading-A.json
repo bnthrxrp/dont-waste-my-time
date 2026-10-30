@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "An improved .pptx file was produced (not only advice).",
+      "passed": true,
+      "evidence": "A/work/q3_business_review_v2.pptx exists (8 slides, python-pptx loads it, 69 KB); original left untouched."
+    },
+    {
+      "text": "The first content slide states the main message or decision (e.g. exit the Brandt contract — notice due by Dec 31 — and/or fix price pass-through on +14% raw materials) rather than an agenda or background.",
+      "passed": true,
+      "evidence": "Slide 1 subtitle: 'One decision requested: Brandt Foods contract notice, deadline Dec 31'. First content slide (2) title: 'Q3 gross profit fell $4.6M as margin dropped 4.5 pp; we need your decision on the Brandt contract before Dec 31', with a 'Decision needed' row and a 'Why margin fell: raw materials +14%, passed through only 2%' row. No agenda/background."
+    },
+    {
+      "text": "Slide titles are action titles (full-sentence takeaways), not topic labels like 'Sales Overview' or 'Market Data'.",
+      "passed": true,
+      "evidence": "Slides 2-8 all use full-sentence takeaway titles, e.g. 'Margin fell in all eight regions, by 3.1 to 6.2 pp, as raw materials rose 14% and prices only 2%'; 'The Brandt contract loses ~$1.4M a year and renews for 2027 unless we give notice by Dec 31'; even appendix titles are sentences. Only slide 1 is a plain title slide."
+    },
+    {
+      "text": "The 3D pie chart is replaced by a more appropriate chart (e.g. sorted bar of revenue or variance by region) or removed with a stated reason.",
+      "passed": true,
+      "evidence": "Original 3D pie removed. Replaced by two native sorted horizontal bar charts (BAR_CLUSTERED): change in gross margin by region (slide 3, EMEA -6.2 highlighted) and change in revenue by region (slide 4, EMEA -2.8 highlighted). Renders cleanly."
+    },
+    {
+      "text": "Key numbers are stated correctly where used: revenue $86.2M vs $88.7M prior-year Q3 (-2.8%), gross margin 23.4% vs 27.9% (-4.5 pp), raw materials +14% vs price +2%, Brandt contract ~$1.4M/yr loss.",
+      "passed": true,
+      "evidence": "Slide 2: '$86.2M, -2.8% vs PY ($88.7M)'; '23.4%, -4.5 pp vs PY (27.9%)'; 'Raw-material costs rose 14%... passed through only 2% in price'; slide 5: '~$1.4M annual loss'. Verified 86.2*0.234 vs 88.7*0.279 = -$4.58M, so its headline '-$4.6M (-18%)' is correct. Minor: slide 4 also cites '$2.1M of $4.4M' (regional roll-up), labelled calc. and flagged as the 27.7 vs 27.9 open item."
+    },
+    {
+      "text": "Filler slides (Agenda, Background, Thank You) and vague next steps ('Continue monitoring', 'Improve communication') are removed or replaced with specific actions (owner and/or date).",
+      "passed": true,
+      "evidence": "Agenda, Background, Thank You slides gone; 'Continue monitoring', 'Improve internal communication', 'Follow up with customers' removed. Slide 6 has 5 specific actions with a 'Done when' column, but owners are '[TBD]' in all 5 rows and only action 2 has a real date ('Before Dec 31'); the other four dates are '[TBD]'. Passes on action specificity plus the one hard date, but weaker than ideal for 'owner and/or date'."
+    },
+    {
+      "text": "The response includes a concise summary of what changed and why.",
+      "passed": true,
+      "evidence": "Final message: main message, 'Changes (10 slides -> 6 + 2 appendix)' with 5 numbered changes (order of story, action titles, pie replaced by two bar charts, new Brandt decision slide, next steps) and a 'Before Thursday' list (Brandt rec is its proposal, below-cost definition, price vs revenue/tonne mismatch, 27.9 vs 27.7, owners/dates blank). Somewhat long but on point."
+    },
+    {
+      "text": "The produced deck opens and renders (the run verified it, e.g. by rendering to images/PDF, or the grader can render it).",
+      "passed": true,
+      "evidence": "Transcript: rendered with render.py, viewed all 8 PNGs, fixed shadows, re-rendered, ran validate.py 'All validations PASSED'. My own render.py run produced 8 clean pages with no overflow or clipping."
+    }
+  ],
+  "quality_score": 7,
+  "strengths": [
+    "Sharpest decision framing: the first content slide's title leads with the Brandt decision and Dec 31, and slide 5 lays out three options (renew / serve notice and renew at or above cost / exit) with a recommendation and the Plant 2 utilization risk.",
+    "Strong analytical insight with correct arithmetic: EMEA explains all of the $2.5M revenue decline (-$2.8M vs +$0.3M for the other seven regions); headline GP -$4.6M reconciles to the stated 27.9% PY margin; two sorted native bar charts replace the 3D pie.",
+    "Tight storyline (6 main slides + 2 appendix), full-sentence titles throughout, source footers on every slide and speaker notes on all slides; honest flagging of data inconsistencies (27.9 vs 27.7, +2% price vs -5.6% revenue/tonne, fixed-cost basis of the Brandt loss)."
+  ],
+  "defects": [
+    "15 orange '[TBD...]' markers sit on the slides themselves (budget comparison, Finance reconciliation, PVM bridge, variable-cost loss, survey basis, 4 owner cells, 4 due cells). A deck going to a division president on Thursday is not presentable without cleanup, and internal reconciliation chatter is on president-facing slides.",
+    "Next-steps slide has no owners and only one real date, so the replacement for vague next steps is itself incomplete; the 'Done when' entries (e.g. 'Bridge in Q4 review') are invented.",
+    "Two different gross-profit decline figures appear ($4.6M headline vs $4.4M regional roll-up on slide 4); explained, but it is another thing to explain to the president. Slide 2 is dense (5 KPI cards, TBD line, 3 text rows) and the title slide is plain.",
+    "Option B ('renew only at or above cost') is the assistant's own invention, though it is disclosed as a proposal in the reply."
+  ]
+}

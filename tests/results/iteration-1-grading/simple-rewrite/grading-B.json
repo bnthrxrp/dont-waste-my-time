@@ -1,0 +1,34 @@
+{
+  "expectations": [
+    {
+      "text": "The rewritten email is about 60 words or fewer and keeps every fact: 8 of 10 categories done, the remaining 2 by next Friday, dependent on finance data arriving on time, and the request to help expedite the finance data.",
+      "passed": true,
+      "evidence": "Body is ~55 words (~64 with the 9-word subject line), within 'about 60'. All facts kept: 'We've finished 8 of the 10 categories', 'The last 2 will be done by next Friday if Finance sends the data on time', and 'Can you help us speed up our data request with Finance?'. Caveat: it adds an unsupported claim, 'It's the only thing that could keep us from finishing ... by next Friday', which goes beyond the source."
+    },
+    {
+      "text": "The request to Mark is explicit and appears in the first two sentences.",
+      "passed": true,
+      "evidence": "The first sentence of the body is the ask, 'Can you help us speed up our data request with Finance?'. The subject line also says 'need your help with Finance data'."
+    },
+    {
+      "text": "The run spawned no subagents, did no web search, and asked no clarifying questions.",
+      "passed": true,
+      "evidence": "Single turn (num_turns 1), no tool calls, no search, no delegation. The closing tip ('add when you sent the request to Finance and who it went to') is a suggestion, not a clarifying question."
+    },
+    {
+      "text": "Apart from the rewrite, the response has at most one or two short lines of commentary.",
+      "passed": false,
+      "evidence": "Commentary after the rewrite is ~114 words: a 'What I changed' header with three bold bullets, plus a separate paragraph advising the user to add the request date and recipient with an example. That is far beyond one or two short lines."
+    }
+  ],
+  "quality_score": 6,
+  "strengths": [
+    "Ask-first structure plus a subject line that states the need: a better executive email than a straight trim, because the VP sees the action up front.",
+    "All source facts retained in ~55 words, and a useful optional tip (say when and to whom the request went) that makes the ask more actionable."
+  ],
+  "defects": [
+    "Adds an unsupported assertion, 'the only thing that could keep us from finishing ... by next Friday', which the user did not say. It is a risk statement to a VP that the author would have to vouch for.",
+    "Commentary is ~114 words of bullets and an extra tip, about three times what a simple rewrite needs. It adds reading time and process chatter.",
+    "The reordering and the added claim go beyond the request to 'tighten'. The email with subject is ~64 words, slightly longer than the other version."
+  ]
+}

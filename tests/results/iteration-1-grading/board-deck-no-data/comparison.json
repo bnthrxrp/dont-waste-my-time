@@ -1,0 +1,10 @@
+{
+  "winner": "A",
+  "margin": "clear",
+  "reasons": [
+    "Integrity decides it: A keeps every company number as a [TBD]/highlighted placeholder and attributes every market figure correctly with dates and caveats; B marks business-case cells well but injects invented time-to-shelf ranges and risk ratings labeled 'management estimates/judgement', and misattributes the IMARC figure to Research and Markets as an 'independent' second estimate (verified by fetching both pages).",
+    "A is a better decision paper: ask, recommendation, key numbers and risks on slide 1; real alternatives including defer; gated approval with stop triggers and owners; and an explicit case against (weak consumption, incumbents, regulatory uncertainty). B's thesis is more one-sided and overstates the speed of the reliance pathway.",
+    "B is visually superior and cleaner to read at a glance (polished exec summary, chart, P&L grid), which narrows the gap, but A's plain, dense slides are still board-usable and fully editable.",
+    "B wasted effort by building an unrequested 12-slide HTML deck in turn 1 and then rebuilding; A spent its turn 1 on a compact (if somewhat long) briefing that did not re-ask audience or deliverable, then delivered a 10-slide pptx with no further questions."
+  ]
+}

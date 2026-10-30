@@ -1,0 +1,34 @@
+{
+  "expectations": [
+    {
+      "text": "The response gives the translation immediately: no questions, no subagents, no web search.",
+      "passed": true,
+      "evidence": "Transcript B: single turn (num_turns 1), reply is the translation only; no question, no subagent/Task call, no web search or other tool use; no files created."
+    },
+    {
+      "text": "Numbers are converted correctly: R$12.3 million (or BRL 12.3 million), 4% above target, 1.2 percentage points (pp).",
+      "passed": true,
+      "evidence": "B: 'revenue of R$12.3 million, 4% above target ... Margin fell 1.2 p.p.' - figures all correct; 'p.p.' is a literal carry-over of the Portuguese abbreviation and equals 'pp' in meaning, so it satisfies 'percentage points (pp)', though it is slightly less idiomatic in English."
+    },
+    {
+      "text": "Terms are translated by meaning: faturamento -> revenue/sales, meta -> target, redes regionais -> regional (pharmacy) chains, verba promocional -> promotional/trade spend, canal independente -> independent channel/pharmacies.",
+      "passed": true,
+      "evidence": "B: faturamento->'revenue', meta->'target', redes regionais->'the regional chains', verba promocional extra->'extra promotional spend', canal independente->'the independent channel'. All match the listed renderings (same 'chains' caveat as A)."
+    },
+    {
+      "text": "Apart from the translation, the response has at most one short note (e.g. on an ambiguous term).",
+      "passed": true,
+      "evidence": "B: two sentences of translation, no notes, preamble or offers."
+    }
+  ],
+  "quality_score": 9,
+  "strengths": [
+    "Immediate, one-turn answer with only the translation",
+    "All figures correct; terms rendered by meaning (revenue, target, regional chains, promotional spend, independent channel)",
+    "Fluent, natural English phrasing ('driven by the regional chains')"
+  ],
+  "defects": [
+    "'1.2 p.p.' keeps the Portuguese abbreviation style; English finance usage is 'pp' or 'percentage points', so it reads slightly less natural",
+    "Does not spell out 'percentage points' or note the generic 'regional chains' / 'independent channel' terms (minor)"
+  ]
+}

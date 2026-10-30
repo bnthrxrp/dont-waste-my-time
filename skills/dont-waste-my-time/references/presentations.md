@@ -61,7 +61,12 @@ Every content slide has these parts, each in the same position throughout the de
 
 **Appendix** for everything a reader may ask for but doesn't need to follow the argument: detail tables, breakdowns by unit, method, sensitivities. Appendix slides keep source lines and may use descriptive titles ("A3. Gross margin by region, FY2024-26"). Point to them from the main slide ("Detail: A3"). Never put a caveat that changes the recommendation only in the appendix or the notes.
 
-**Placeholders in slides.** Make every `[TBD: what, owner]` visible: bold, in a distinct highlight color. Never plot a missing value as zero or leave it out of a chart silently: chart the known values and annotate the gap.
+**Placeholders in slides.** A deck meant to be sent must look sendable.
+- Use a `[TBD: what, owner]` only where a missing fact changes the decision: a number, a target, the decision itself.
+- Never put one in a title or inside the sentence that states the ask, and keep the total to a handful.
+- Action owners and dates that the material doesn't give: propose an owner by role where it's obvious ("Finance (proposed)"), or leave the column out. List the gaps once, in the final message or one notes or appendix list.
+- Mark the placeholders you keep in bold, never in loud colors scattered across slides.
+- Never plot a missing value as zero or leave it out of a chart silently: chart the known values and annotate the gap.
 
 **Density limits** (heuristic review flags, not research findings; the template, the brief or the audience can override them):
 
@@ -112,7 +117,15 @@ Slides carry claims and evidence, not the speaker's script: never put on the sli
 - **Type**: one typeface family, two at most (titles and body). Build hierarchy with size and weight, not more fonts or colors. Sentence titles at 24-28 pt: the 36-44 pt that the pptx skill suggests is sized for short labels and forces long titles onto three lines.
 - **Palette**: a neutral base (dark gray text, light gray for context data, white background) plus **one accent** for the data the title is about. Add a second color only for a second meaning, such as plan vs actual.
 - **Semantic color**: color means something in business terms, never decoration. Favorable and unfavorable follow business polarity (rising cost is unfavorable), stay the same across the deck, and always come with a sign, label or arrow, never color alone. The same series has the same color on every slide.
-- **No decoration that carries no evidence** in decision, review and board decks: no stock photos, decorative icons, clip art, 3D effects, gradients, shadows or title underlines. A keynote or training talk built for engagement may use imagery. Where the pptx skill's design ideas (a bold mood palette, icons in circles, a visual on every slide, varied layouts for variety's sake) conflict with this file, this file wins for executive material. A clear claim on a plain slide beats a decorated one; change the layout only when the shape of the content changes.
+- **Professional, not plain.** Executives judge credibility partly by finish. Give the deck a deliberate visual system:
+  - a designed title slide;
+  - a consistent title band or accent rule;
+  - a clear type scale;
+  - KPI callouts and grouped points in cards or panels with a light fill;
+  - native charts styled in the deck palette.
+  
+  Use the slide: a body that fills less than about half the area means the visual should be larger, or the slide should merge with another. A bridge is a true waterfall: start total, floating drivers, end total. Follow the pptx skill's layout and polish guidance wherever it doesn't conflict with the next point.
+- **No decoration that carries no evidence** in decision, review and board decks: no stock photos, decorative icons, clip art, 3D effects, decorative gradients or shadows. A keynote or training talk built for engagement may use imagery. Restraint is about decoration, not about finish: a clean, well-composed slide beats both a decorated one and a bare one. Change the layout only when the shape of the content changes.
 - **Numbers**: one unit, precision and format per metric across the whole deck ($86.2M everywhere, not $86M on one slide and 86,200,000 on another). Put units in titles, axis labels or column headers. Write percentage-point changes as pp, not %. Use a minus sign or parentheses for negatives, consistently. Round to what the decision needs, usually 2-3 significant digits. Totals add up as displayed, or a note says they don't because of rounding.
 - **Tables**: about 7 rows × 6 columns at most in the main body. Right-align numbers and highlight the row or column the title is about. Bigger tables go to the appendix.
 

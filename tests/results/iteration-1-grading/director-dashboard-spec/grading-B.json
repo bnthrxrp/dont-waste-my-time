@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "The spec starts from the decisions or management questions the Commercial Director must answer, before listing KPIs.",
+      "passed": true,
+      "evidence": "weekly_commercial_dashboard_spec.md section 2 'Decisions supported' lists five decisions with the action each drives (where to push this week; fix execution vs accept market slowdown and reforecast; hold back shipments to avoid loading the trade; re-allocate or stop promotions; where the field force goes next week). Section 1 also has a 'one-minute test'. This comes before the KPI dictionary (section 4)."
+    },
+    {
+      "text": "Each headline KPI has a definition, formula or source field, refresh/latency, a target or threshold (or an explicit 'to be confirmed'), and polarity (which direction is good).",
+      "passed": true,
+      "evidence": "Every headline KPI (1-7) has a fixed block: Question, Formula, Source/grain, Refresh/latency, Target, Polarity ('Higher is better' / 'Lower is better (up to the cap)'), Status rule, Owner, Caveats. Missing items are explicit [TBD: ..., owner: ...] (e.g. net sales target source/grain, purchase-event source for coverage, OOS 'None formal'). Driver metrics table also carries Source, Target/band and Polarity columns."
+    },
+    {
+      "text": "It addresses the data latency/grain mismatches and quality caveats in the source (IQVIA sell-out monthly with ~4-week lag versus a weekly dashboard; retail-audit sample skew; CRM outlet duplicates) and says how the dashboard shows them.",
+      "passed": true,
+      "evidence": "Top 'Read this first' box and section 4: sell-in/CRM daily vs sell-out '~4 weeks after month end -> latest data is two months old', Finance close+6 WD, OOS biweekly; weekly and monthly KPIs visually separated on Page 1 with their own as-of dates; 'Never disaggregate monthly data to weeks'; filter-compatibility matrix labels visuals that ignore the week slicer. OOS: 'Panel OOS (400-store audit)', 'Large chains / Southeast over-represented', suppress small n, no extrapolation. Duplicates: coverage on golden outlet ID, 'Provisional: outlet master x% deduplicated' badge, 0.82 effect worked and labeled as an assumption to confirm."
+    },
+    {
+      "text": "It defines a visual hierarchy/layout (what sits at the top vs drill-down) and chart choices justified by the question each answers.",
+      "passed": true,
+      "evidence": "Section 3 gives a page table plus a Page 1 wireframe with zones (weekly vs monthly KPI strip, Needs-attention list, gap-to-target variance bars, driver bullet graphs), KPI card anatomy, drill path to pages 2-5 and Customer/SKU drill-through. Each KPI carries an explicit 'Question' it answers, chart rules are stated ('No gauges, donuts or maps. A map is not needed: region is compared as sorted bars'), and pages are tied to the numbered decisions."
+    },
+    {
+      "text": "RAG/status colors are defined by business thresholds and metric polarity, not merely by up/down movement.",
+      "passed": true,
+      "evidence": "Status rules are thresholds against targets with explicit polarity per KPI (Higher/Lower is better), status is icon + word + color with colors by favorable/unfavorable rather than up/down, 'no target -> No target in grey', plus a 'watermelon' rule so a total cannot be green when a material component is red. Acceptance test 3 checks each rule at, above and below every threshold per polarity."
+    },
+    {
+      "text": "It specifies interactions (filters, drill-downs) and non-happy-path states (stale data, missing data, loading/empty/error) or explicitly scopes them out.",
+      "passed": true,
+      "evidence": "Section 8 Interactions (synced slicers, reset, drill path with back buttons, drill-through, tooltips, partial period styling) and a Section 9 States table covering Stale, Partial, No target, Empty ('Never a 0 that reads as real'), Low sample and Error (source name + last good as-of). Loading is not mentioned explicitly, but stale/missing/empty/error are specified with behavior and acceptance test 9 forces each state."
+    },
+    {
+      "text": "The top level is limited to a focused set of headline KPIs (roughly 9 or fewer) rather than every available metric.",
+      "passed": true,
+      "evidence": "Seven headline KPI cards on Page 1 (net sales MTD, month landing, coverage, panel OOS, sell-out growth, trade spend %, contribution margin); call-plan compliance, sell-in/sell-out ratio, price index and gross-to-net are demoted to driver metrics without a headline card."
+    },
+    {
+      "text": "It does not invent targets absent from the data description; the OOS threshold is labeled informal (5%) or to-be-confirmed.",
+      "passed": true,
+      "evidence": "OOS: 'None formal. The team uses 5% informally. Show Reference 5% (informal, not approved) as a grey reference line. No status color until a target is approved' - no RAG on OOS at all. Other targets are either from the data (net sales target, 75% coverage, 8.5% cap) or [TBD]. The only invented bands (net sales 98-100%, trade spend 8.0-8.5%, WD 5 suppression) are explicitly marked '(proposed)' with 'proposed, to be confirmed' shown in tooltips and page 6; all others are [TBD]. Final message repeats this. Minor: numbers_check lists some design parameters as untraced, but they are structural, not targets."
+    }
+  ],
+  "quality_score": 8.5,
+  "strengths": [
+    "Every headline KPI follows the same contract (Question, Formula, Source/grain, Refresh/latency, Target, Polarity, Status rule, Owner, Caveats), with unknowns explicitly [TBD: ..., owner: ...] rather than guessed; targets are only the given ones (net sales, 75%, 8.5% cap), the 5% OOS is a grey informal reference with no status color, and the few suggested bands are labeled 'proposed'.",
+    "Excellent integrity framing: a 'Read this first' box leads with the two risks that change the answer (duplicate-inflated denominator, with the 0.82 effect shown as an assumption; weekly vs monthly source mixing), plus a filter-compatibility matrix showing which slicers each source ignores.",
+    "Decision-first structure (five decisions each tied to an action), seven headline KPIs max, a Needs-attention exceptions engine with sentence templates and R$ at stake, and a no-watermelon status rule.",
+    "Complete build contract beyond KPIs: states table (stale/partial/no target/empty/low sample/error), interactions, RLS, data model and mapping tables as critical path, 10 acceptance tests, 11 owner-assigned open questions with blocking status."
+  ],
+  "defects": [
+    "Long (about 28 KB) with many TBDs and extra machinery (watermelon materiality threshold, RLS test users, price/volume/mix bridge), so the BI team has to resolve a lot before building; some of it is more than a first version needs.",
+    "Loading state is not specified, and with so many TBD bands most statuses will show 'no target' until owners respond.",
+    "Costlier process (13 turns, skill and script runs) for the same single deliverable; final chat message is long, though it adds the key risks."
+  ]
+}

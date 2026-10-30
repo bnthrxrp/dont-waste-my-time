@@ -108,6 +108,7 @@ These are defaults, not quotas. The user's constraints win, and shorter is bette
 | Email / message | ≤ 80 words | ≤ 150 words | ≤ 300 words |
 | Memo / executive summary | ≤ 200 words | About one page: ≤ 450 words, plus an optional appendix | 2-5 pages, opening with a summary of ≤ 250 words |
 | Report / business review | 1 page | Summary ≤ 250 words + body ≤ 3 pages + appendix | Summary + full analysis + method and data notes |
+| Business case memo | ≤ 300 words + key table | ≤ 1.5 pages: the ask, economics and options on page 1, inputs checklist in an appendix | 3-5 pages + model appendix |
 | Board paper | Cover sheet + 1 page | Cover sheet + ≤ 4 pages + appendices | As required, with a 1-page cover sheet |
 | Deck | 3-5 slides | 6-12 main slides + appendix | 12-20 main slides + appendix |
 | Dashboard | 3-5 headline KPIs on one screen | 5-9 headline KPIs + drivers + exceptions | Headline view + drill-down pages + data-quality notes |

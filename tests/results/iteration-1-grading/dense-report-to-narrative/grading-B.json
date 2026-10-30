@@ -1,0 +1,57 @@
+{
+ "expectations": [
+  {
+   "text": "executive_narrative.md exists and its main body is at most about 600 words (readable in roughly 3 minutes).",
+   "passed": true,
+   "evidence": "File exists in B/work/. wc -w = 635 whole file; 627 excluding the H1; about 613 excluding headings and about 576 excluding headings, footer and meta line. Within 'about 600', the same standard as A."
+  },
+  {
+   "text": "The first paragraph states the central conclusion (e.g. growth is price-driven / full-year forecast at risk) rather than background or an introduction.",
+   "passed": true,
+   "evidence": "First paragraph (bold): 'Our +4% growth is less healthy than it looks. Prices are carrying it, and so is inventory we've pushed into customers. Consumers are buying fewer of our products, and the full-year forecast of $548M doesn't yet include the inventory correction that customers have told us is coming.'"
+  },
+  {
+   "text": "It states that the +4.0% year-over-year growth is price-driven (price +6.8%) while volume declined (-3.1%).",
+   "passed": true,
+   "evidence": "'Price is the only thing growing. Price contributed +6.8% and volume fell -3.1%. The budget assumed +4.5% price and +1.5% volume.' The +4.0% sits in the next paragraph."
+  },
+  {
+   "text": "It identifies the sell-in (+4.0%) vs sell-out (+0.7%) gap and trade inventory of 6.8 weeks against the agreed 4-6 week range as a risk to Q4 / the full-year forecast.",
+   "passed": true,
+   "evidence": "Item 2: 'Sell-in grew +4.0%, but consumer sell-out grew only +0.7%'; inventory 'from 5.2 to 6.8 weeks of supply, above the agreed 4-6 week range'; customers will cut back by year-end; 'it is not in the forecast'. The $548M, the $8M gap to budget and 'probably the best case' are stated in the bottom line."
+  },
+  {
+   "text": "Any figure not stated in the source (e.g. ~$12.6M exposure = 1.6 extra weeks x $7.9M/week, or a revised full-year number) is labeled as an estimate or calculation and its basis is shown; no number contradicts the source.",
+   "passed": true,
+   "evidence": "The destock figures are labeled with their basis: 'getting back to 6 weeks removes about $6M ... 5-week midpoint ... about $14M', plus the footer 'The destock estimates ($6-14M) are derived: excess weeks of supply x $7.9M weekly sell-out' and the retail-value caveat. I checked them: 0.8 x 7.9 = 6.3 and 1.8 x 7.9 = 14.2. It gives no revised full-year number or $12.6M build figure, which the assertion lists only as examples. Minor gap: 'about $12M lost vs prior year' for Digestia is derived and untagged. 'Digestia is the main reason the Midwest is 4.2% below budget' is unsupported, since the source cites weather, competition and the delisting. 'Now that repeat purchase has proven the product' overstates a repeat rate that is only 'in line with' the benchmark. No number contradicts the source."
+  },
+  {
+   "text": "It flags the deterioration in trade promotion effectiveness (average ROI 0.82 vs 1.07, 3 of 11 national promotions below 1.0, and/or trade spend +18%).",
+   "passed": true,
+   "evidence": "Item 3: 'Trade spend is up 18% to $58.4M. Average promotion ROI fell from 1.07 to 0.82 ... Brevex BOGO returned 0.61 and Relivia 30% off returned 0.74.' It does not mention 3 of 11 below 1.0, but the assertion needs only one of the listed signals."
+  },
+  {
+   "text": "It ends with specific actions or decisions (e.g. reset Q4 sell-in / forecast, stop or redesign negative-ROI promotions, Somnis recovery, OTIF fix), not generic statements like 'continue to monitor'.",
+   "passed": true,
+   "evidence": "Closes with 'Decisions for Monday', five specific decisions framed as questions: reforecast with the destock and stop shipping above range in Q4; pause or redesign ROI<1.0 promotions before the Q4/Q1 calendar locks; Digestia (close the private-label gap, re-pack value range, manage for cash, recover MegaMart Midwest); Somnis (push ACV from 41% toward 70%); Columbus supply fix and the $1.9M fines. No placeholders."
+  },
+  {
+   "text": "It contains no generic filler (e.g. 'in today's rapidly evolving landscape', 'holistic overview') and does not repeat the source's unsupported 'solid performance' framing as fact.",
+   "passed": true,
+   "evidence": "No filler phrases. It rejects the report's 'solid performance' framing with 'less healthy than it looks' and does not repeat it as fact."
+  }
+ ],
+ "quality_score": 7,
+ "strengths": [
+  "Clean, readable structure: a bold bottom line, six numbered findings, a short 'what's working', and five decisions for Monday. No placeholders, so it is ready to use, and the destock estimate is labeled derived with its basis in the footer.",
+  "Explicitly rejects the report's 'solid performance' conclusion and leads with the price-versus-volume and sell-in versus sell-out story. Includes the 0.82 vs 1.07 ROI, the +18% trade spend and the two largest promotions' ROIs.",
+  "Decisions are specific and broader (Digestia options, Columbus and the fines, Somnis ACV), framed as questions suited to a leadership meeting.",
+  "The chat reply is concise, clearly says the $6-14M figure and the decisions are the assistant's own, and flags the 14.1% 'gross sales' inconsistency."
+ ],
+ "defects": [
+  "Gives no revised full-year figure and no quantified forecast exposure beyond the $6-14M destock range, so the headline risk is less actionable than A's. The 'Q4 orders' framing mixes retail value with shipments, though it caveats this.",
+  "Unsupported or overstated claims: 'Digestia is the main reason the Midwest is 4.2% below budget' (the source cites weather and competition as well); 'repeat purchase has proven the product' (34% is only in line with the benchmark); 'about $12M lost' for Digestia is derived and untagged.",
+  "Repeats the source's 0.82 average ROI without noticing that it is inconsistent with only 3 of 11 promotions below 1.0, and omits the '3 of 11' fact.",
+  "Slightly longer on lower-priority items (six findings plus 'what's working'), with less prioritization of which decisions matter most."
+ ]
+}

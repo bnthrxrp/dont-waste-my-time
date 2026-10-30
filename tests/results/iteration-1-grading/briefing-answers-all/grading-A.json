@@ -1,0 +1,42 @@
+{
+  "expectations": [
+    {
+      "text": "Turn 1: the assistant asks a compact briefing in a single message (audience, style, objective, detail level; constraints only if unknown) with predefined numbered options or an equivalent choice widget and stated defaults; it does not ask for information already given (topic, data file).",
+      "passed": false,
+      "evidence": "Turn 1 contains no briefing at all. The run read the workbook, built an unrequested 9-slide HTML deck (pricing-2027-deck.html), tried to publish it to claude.ai (upload not approved) and ended with a long findings summary. No audience/style/objective/detail options, no defaults. Its only 'question' is an offer to publish and to rebuild as .pptx."
+    },
+    {
+      "text": "Turn 1 asks no more than six questions.",
+      "passed": true,
+      "evidence": "Turn 1 asks zero questions, so the count is at most six. This is vacuous: the run skipped the briefing rather than keeping it compact."
+    },
+    {
+      "text": "Turn 2: the assistant asks no further questions (or one critical question at most), confirms the configuration briefly, and proceeds.",
+      "passed": false,
+      "evidence": "Turn 2 asks no questions and proceeds to build, but there is no brief confirmation of the configuration before or while building (intermediate messages are only 'Deck is built. Rendering it to images now...' and a layout-fix note). The final message mentions C-suite and approval only incidentally. It also ends with a conditional offer: 'If you need approval for the original plan as proposed, I can rebuild the deck around that.' Borderline, failed for the missing configuration confirmation."
+    },
+    {
+      "text": "A .pptx of at most 10 slides in English is produced, aimed at the C-suite with a financial/performance emphasis, and explicitly requests approval/decision.",
+      "passed": true,
+      "evidence": "2027_Pricing_Plan.pptx has exactly 10 slides (doc_text/render: 10 pages), in English. Slide 1: 'Request for approval of list-price changes... FOR DECISION'. Slide 2: 'DECISION REQUESTED: Approve 2027 list prices for 10 SKUs' with KPI cards and a COGS-inflation card. Slide 9 next step 1: 'Approve list prices - Decision today'. The financial emphasis (revenue bridge, sensitivity, margin outlook) suits the C-suite. Caveat: it asks approval for A's own amended plan (hold BRE-V48, cap REL-100 at 5%), not the plan as proposed, though this is stated openly on slides 2 and 7 and in the chat."
+    },
+    {
+      "text": "Numbers in the deck come from pricing_2027.xlsx; any derived figure (e.g. revenue impact from price x volume x elasticity) is labeled as an estimate with its assumptions.",
+      "passed": false,
+      "evidence": "I recomputed everything from the workbook and every figure checks out (+$2.39M, +$2.24M draft, $7.04M price effect, -$4.64M volume effect, +$0.17M downside, 72% Relivia share, 2.9% weighted price). All inputs trace to the workbook. The weakness is labeling: the derived revenue figures on slides 1-8 are shown as plain facts under a footer 'Source: pricing_2027.xlsx', with no 'estimate/calculated' tag. The assumptions (revenue = list x units; units = units x (1 + elasticity x change); no competitor response; list-price basis) appear only in the slide 10 Method box. Strictly failed for point-of-use labeling, a borderline call. The margin gap is honestly left unsized."
+    }
+  ],
+  "quality_score": 6,
+  "strengths": [
+    "Most polished deck visually: dark title slide, KPI cards, native waterfall bridge, brand and SKU charts, and a clean change table on slide 7. It reads as a finished C-suite deck.",
+    "Numbers are all correct on independent recomputation. Limits are stated honestly: list-price basis, no COGS data so the margin gap is not sized, and no dates on next steps.",
+    "Proactive analysis with a clear sensitivity case: holding BRE-V48 (its increase loses $0.24M) and capping REL-100 at 5% give +$2.39M and stay positive at +$0.17M when every elasticity is 0.3 worse, where the draft is -$0.28M.",
+    "Executive-summary slide leads with the decision requested and four headline figures."
+  ],
+  "defects": [
+    "Skipped the briefing entirely in turn 1. It built an unrequested HTML deck and tried to publish it, so the work was wasted and turn 2 rebuilt everything as a .pptx. This misses the expected compact-briefing behavior.",
+    "Asks the C-suite to approve its own amended plan rather than 'the pricing plan' the user named. The deviation is disclosed, but the user must rebuild if they wanted the original approved.",
+    "Revenue-only logic: the 'hold BRE-V48' and 'cap REL-100' recommendations ignore gross-profit effects under 5.5% COGS inflation. The margin slide only says margin % falls, with no sizing or scenario.",
+    "Derived figures are footnoted 'Source: pricing_2027.xlsx' with assumptions only in the appendix, and no 'estimate' labels on headline numbers. No explicit configuration confirmation in turn 2."
+  ]
+}

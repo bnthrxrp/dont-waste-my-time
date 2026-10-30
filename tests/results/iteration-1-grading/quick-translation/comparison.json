@@ -1,0 +1,10 @@
+{
+  "winner": "tie",
+  "margin": "slight",
+  "reasons": [
+    "Both runs answered in one turn with the translation only: no questions, tools, subagents, searches or notes, so all four assertions pass for both.",
+    "The two translations are near-identical; all numbers (R$12.3 million, 4% above target, 1.2 pp) and all business terms (revenue, target, regional chains, promotional spend, independent channel) are correct in both.",
+    "Only differences: A writes '1.2 pp' and 'the extra promotional spend'; B writes '1.2 p.p.' and 'extra promotional spend'. A's 'pp' is marginally more idiomatic English, but this does not change any assertion outcome or executive usefulness.",
+    "Cost and time were essentially equal (about $0.138 vs $0.137; 8.4s vs 8.3s)."
+  ]
+}

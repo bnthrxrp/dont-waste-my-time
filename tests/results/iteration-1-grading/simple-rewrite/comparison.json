@@ -1,0 +1,10 @@
+{
+  "winner": "A",
+  "margin": "slight",
+  "reasons": [
+    "Each run passes 3 of 4 assertions and fails a different one: A fails 'ask in the first two sentences', B fails 'at most one or two short lines of commentary'.",
+    "A's deliverable is a faithful tightening (44 words, from 119) with every fact and no invented content. B's email is better structured (ask first, subject line) but adds an unsupported claim ('the only thing that could keep us...') to a message going to a VP.",
+    "A's ~36-word note respects the user's time; B's ~114-word 'What I changed' list plus an extra tip is about three times that, which is the kind of overhead a simple rewrite should avoid.",
+    "B's ask-first structure and subject line are real advantages and keep the margin slight."
+  ]
+}

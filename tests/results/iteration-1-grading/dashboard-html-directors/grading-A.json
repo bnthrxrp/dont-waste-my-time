@@ -1,0 +1,61 @@
+{
+  "expectations": [
+    {
+      "text": "A single self-contained HTML file was produced and it loads in a browser without JavaScript errors.",
+      "passed": true,
+      "evidence": "A/work/commercial_dashboard.html (42.9 KB), CSV embedded inline, no external src/href/@import. Headless Chromium via render.py and my own Playwright probe: 0 console errors/pageerrors on load, after month change, each channel button, theme toggle and source-data expand. (The run's own first draft had a thead JS error; fixed before delivery.)"
+    },
+    {
+      "text": "Headline KPI cards show the actual value, a comparison (budget/target and/or prior year) and the variance with direction.",
+      "passed": true,
+      "evidence": "Net sales card: $336.2M, '-0.9% vs budget' (amber !), '+15.1% vs PY'. Gross margin 41.4%, '-139 bp vs budget', 'budget 42.8%'. Gross profit $139.1M, '-$6.0M vs budget'. OTIF 94.5% '-0.5 pts vs target'. DSO 50.7 days '+7.3 d vs target'. Inventory ('+1.3 wks since Jan') and complaints ('450', '51 in Sep') show only a trend/latest figure because the CSV has no target for them."
+    },
+    {
+      "text": "Status coloring respects metric polarity: rising DSO, inventory weeks and customer complaints are shown as unfavorable.",
+      "passed": true,
+      "evidence": "DSO is red 'x +7.3 d vs target' (lower-is-better handled: above target = off track) and the scorecard marks DSO 'Off track' for all channels. Inventory and complaints are not colour-coded in cards or charts (no target in CSV), but the 'What needs attention' box frames both as adverse: 'Working capital is drifting: DSO +6.6 days and inventory cover +31% since Jan' and 'Service: ... Complaints peaked in Jun (69, vs a median of 48)'. Nothing rising is shown as favourable. Lenient pass: the colour signal exists only for DSO; inventory/complaints are conveyed in text."
+    },
+    {
+      "text": "Values shown match the CSV (spot-check: YTD Jan-Sep total net sales across channels, and one monthly value).",
+      "passed": true,
+      "evidence": "Independent recompute from the CSV: YTD net sales 336.16 (budget 339.23, PY 291.96), GP 139.08 vs 145.06, Sep total 38.71. Card shows $336.2M, -0.9% (-$3.1M), +15.1%, GP $139.1M / -$6.0M; net-sales chart end label '$38.7M Act' for Sep; channel YTD 200.9/83.2/52.0 in scorecard match 200.88/83.25/52.03; volume -$1.7M and rate -$4.3M match my -1.68/-4.29. Complaints 450 and Sep 51 match."
+    },
+    {
+      "text": "The top of the dashboard surfaces what needs attention (exceptions or key insights), not only charts.",
+      "passed": true,
+      "evidence": "'What needs attention' is the first block under the header and filters, above the KPI cards and charts: five bullets (sales -0.9% with E-commerce +$3.3M vs Independent pharmacies -$6.6M; GP -$6.0M mostly margin rate; DSO/inventory drift; OTIF misses; PY base caveat). Bullets re-compute with the filters."
+    },
+    {
+      "text": "Charts state units and periods; no 3D effects; bar charts start at zero; no misleading dual axes.",
+      "passed": false,
+      "evidence": "Units and periods are stated (subtitles '$M', 'YTD', 'Count per month', 'Target 95% (dashed)'); no 3D; no dual axes. But the gross-profit bridge (a horizontal bar chart) draws the Budget ($145.1M) and Actual ($139.1M) total bars from a truncated axis starting at $136M (code comment: 'zoom the axis so deltas are legible; totals are drawn from the left edge with a break marker'). The actual bar looks about a third the length of the budget bar for a 4% gap, which is exactly the misleading-baseline pattern; the small break tick discloses it but the bars do not start at zero."
+    },
+    {
+      "text": "Every filter or drill-down control present actually changes what is displayed.",
+      "passed": true,
+      "evidence": "Playwright: YTD-through select (Jan..Sep) changes headline text, KPI values (Jan-Mar view: $110.2M, +0.4% vs budget), bullets and all charts; each channel button (Retail/Independent/E-commerce) changes header, bullets, cards, charts, scorecard; theme toggle sets data-theme=dark; 'Source data' summary expands to the full CSV table. No dead controls found. Minor: single-month (Jan) state produces odd text ('DSO +-0.0 days ... since Jan', 'Complaints peaked in Jan (45 vs median 45)')."
+    },
+    {
+      "text": "Data definitions/provenance (source, period covered, metric definitions) are visible somewhere in the dashboard.",
+      "passed": true,
+      "evidence": "Footer: 'Source: monthly_kpis.csv (Jan-Sep 2026, 3 channels). All-channels GM/OTIF/DSO/inventory are net-sales-weighted averages; DSO-vs-target measured against each channel's own target.' plus 'Status rules' thresholds; header shows 'YTD Jan-Sep 2026'; chart subtitles define OTIF ('On-time-in-full'), DSO, volume vs rate; full source table expandable. Definitions are thin (no formal metric glossary, no extract date) but source, period and key definitions are visible."
+    },
+    {
+      "text": "The run did not ask the user for the audience or communication style (both were given in the request).",
+      "passed": true,
+      "evidence": "Transcript shows a single turn: no questions to the user; the final message is a findings summary with an optional offer to publish a private page. Audience/style never requested."
+    }
+  ],
+  "quality_score": 7,
+  "strengths": [
+    "Opens with a plain-language 'What needs attention' block (before the cards) that names the real story: sales -0.9% hides Independent pharmacies -$6.6M vs E-commerce +$3.3M, and margin rate (-$4.3M) is the larger driver; every figure I recomputed from the CSV matches.",
+    "Defaults to YTD Jan-Sep with polarity-correct status icons (DSO above target = off track) and a working month and channel filter that re-computes headline, bullets, charts and scorecard; flags the falling prior-year base honestly and labels the receivables figure an estimate.",
+    "Compact, single page with dark/light theme, source table and status-rule footer; efficient run (one turn, no questions, concise final summary with caveats)."
+  ],
+  "defects": [
+    "Gross-profit bridge draws Budget and Actual total bars from a truncated $136M axis, so a 4% gap looks like a two-thirds drop; the small break tick does not fix the misleading baseline (fails the bars-start-at-zero standard).",
+    "Scorecard table is clipped at desktop width: the Complaints column is cut off (header 'Complain', values truncated) and needs a hidden horizontal scroll; it is also the last column a director would want to read.",
+    "Definitions are thin (one footer paragraph and status rules; no glossary for OTIF/DSO/GP method, no extract-date note) and the templated narrative misreads in edge states (Jan view: 'DSO +-0.0 days', 'Complaints peaked in Jan (45 vs median 45)').",
+    "Inventory and complaints get no status colour or comparison; they rely on text only."
+  ]
+}

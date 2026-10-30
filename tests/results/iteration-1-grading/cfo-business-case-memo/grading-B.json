@@ -1,0 +1,36 @@
+{
+  "expectations": [
+    {
+      "text": "The run does not ask who the audience is or what the objective is (CFO approval was stated).",
+      "passed": true,
+      "evidence": "Transcript B shows no question; it wrote the memo directly after listing the empty workspace."
+    },
+    {
+      "text": "No cost, revenue or productivity figure is presented as fact without a source; missing numbers are requested in at most one targeted question or shown as clearly marked placeholders/assumptions.",
+      "passed": false,
+      "evidence": "B/work/KAM_Business_Case_Memo.md states unbracketed, invented figures as facts: 'about $585K per year fully loaded, plus $66K one-time', '$4.5M in incremental net sales and $1.8M in contribution', 'Payback: about 12 months', '$651K' budget, a cost table (base $110,000, variable $30,000, travel $20,000, etc.), $1.5M target per KAM, 40% contribution margin, ramp curve, scenario table with ~10/~12/~35-month payback. The only disclosure is a 'Drafting note (delete before sending)' calling them 'illustrative assumptions'; the ask and decision sections present them as the case. Bracketed items also carry invented values ([45] chains, [+11%] growth, [2] KAMs, [8-12%] commission). The figures are internally consistent (checked: Y1 net +$0.02M, Y2 +$1.2M, downside ~35 months) but have no source; the chat claims 'every number in it is a placeholder', which does not match the memo text."
+    },
+    {
+      "text": "The memo leads with the decision requested and the rationale, and covers cost, expected benefit, payback/break-even logic, risks, alternatives and how success will be measured.",
+      "passed": true,
+      "evidence": "Section 1 'The ask' leads with the approval request, cost, return, payback and breakeven; later sections cover why now, financial case with payback and scenarios, five alternatives, gates and risks, quarterly measurement against a pre-hire baseline with a control group, and a 'Decision requested' close. All required elements are present."
+    },
+    {
+      "text": "The memo body is concise (about one page, roughly 500 words or fewer excluding placeholders tables).",
+      "passed": false,
+      "evidence": "Memo is 1,370 words total: about 851 words of body text excluding tables and appendix, plus about 383 words in tables and a model-formula appendix. That is roughly 3 pages in a Markdown file, well above about one page / roughly 500 words."
+    }
+  ],
+  "quality_score": 4,
+  "strengths": [
+    "Complete, well-argued CFO case with real payback logic: cost build-up, ramp, scenarios, breakeven, gated hiring (2 now, 1 after day-120 gate) and a baseline-plus-control measurement plan; the arithmetic checks out.",
+    "Decision-first opening with a clear ask, plus a formula appendix so the user can recompute when swapping inputs.",
+    "Chat reply explicitly lists the five inputs to replace and warns that numbers are illustrative; no questions asked."
+  ],
+  "defects": [
+    "Invents a full financial model (salary, benefits, $1.5M per-KAM target, 40% margin, $4.5M benefit, 12-month payback) and presents it unbracketed in the ask, so the memo reads as ready to send with fabricated headline numbers; the only warning is a delete-before-sending note and the chat message.",
+    "Bracketed 'placeholders' carry specific made-up values ([45] chains, [+11%] vs [+2%], [2] KAMs), which can be mistaken for real data and blur which figures are real.",
+    "About 1,370 words, around 3 pages, versus a one-page target; the memo is far too long for a CFO approval ask.",
+    "Delivered as a raw .md file rather than a memo format a CFO or manager would send, and the chat message overstates that 'every number is a placeholder'."
+  ]
+}

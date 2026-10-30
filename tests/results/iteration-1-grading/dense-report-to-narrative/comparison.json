@@ -1,0 +1,10 @@
+{
+ "winner": "A",
+ "margin": "slight",
+ "reasons": [
+  "Both pass all eight assertions. The difference is quality: A turns the central risk into a labeled, quantified revised full-year range ($534-542M, 96-97% of budget) with the calculation shown, while B stops at a $6-14M destock figure and 'probably the best case'.",
+  "A has stronger number integrity. It tags every derived figure with its basis, interprets the Somnis diagnosis as 'interpretation', and caught and left out two internally inconsistent source figures (the 14.1% of gross sales and the 0.82 average ROI). B caught only one and repeats the 0.82, and it has more unsupported inferences ('main reason the Midwest is below budget', 'proven the product') and an untagged $12M.",
+  "B is cleaner to use as delivered: no [TBD] owner and date placeholders, and decisions framed as Monday questions. A's placeholders and denser, roughly 630-word body partly offset its analytical edge, so the margin is slight rather than clear.",
+  "Both open answer-first, reject the 'solid performance' framing, stay near 600 words, and end with specific decisions, so neither is penalized on structure or filler."
+ ]
+}

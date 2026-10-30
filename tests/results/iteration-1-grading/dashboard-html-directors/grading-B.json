@@ -1,0 +1,61 @@
+{
+  "expectations": [
+    {
+      "text": "A single self-contained HTML file was produced and it loads in a browser without JavaScript errors.",
+      "passed": true,
+      "evidence": "B/work/commercial_performance_dashboard.html (52.5 KB), rows embedded as JSON, no external src/href/@import. render.py reported no console errors, overflow or clipping; my Playwright probe (month select, Month/YTD, channel select, six trend tabs, Reset, definitions expand) produced 0 pageerrors/console errors. Mobile 390px has no page-level horizontal scroll."
+    },
+    {
+      "text": "Headline KPI cards show the actual value, a comparison (budget/target and/or prior year) and the variance with direction.",
+      "passed": true,
+      "evidence": "Default (Sep) cards: Net sales $38.7M 'vs budget -$0.49M (-1.3%)', 'vs prior year +26.9%'; Gross margin 40.6% 'vs budget -2.2 pp (budget 42.8%)' plus GP $15.72M '-$1.04M vs budget'; OTIF 94.5% 'vs target -0.5 pp (target 95.0%)'; DSO 50.7 days 'vs target +7.3 days (target 43.4)'. Inventory '+1.3 weeks vs Jan (+31%)' and complaints '+1.0 vs 9-month average (50.0)' carry no target comparison because the CSV has none (labelled 'No target'). Each card also has status badge and sparkline."
+    },
+    {
+      "text": "Status coloring respects metric polarity: rising DSO, inventory weeks and customer complaints are shown as unfavorable.",
+      "passed": true,
+      "evidence": "polarity coded in the model ('dso','inv','complaints' = 'lower'); DSO is red 'x Off track' with +7.3 days vs target, scorecard DSO cells flagged 'x' for all channels. Inventory and complaints are neutral grey 'No target' badges (explicitly 'No target exists, so this carries no status'), but both are listed in 'Needs attention' as adverse items ('Inventory cover 5.6 weeks ... up from 4.2 (+31%)'; YTD view: 'Complaints spiked to 69 in Jun vs 47.6 average ... (+45%)'). Nothing rising is shown favourable. Same lenient pass as Run A: colour signal only on DSO, the others in text."
+    },
+    {
+      "text": "Values shown match the CSV (spot-check: YTD Jan-Sep total net sales across channels, and one monthly value).",
+      "passed": true,
+      "evidence": "Default Sep view: Net sales $38.7M = CSV Sep sum 23.10+9.10+6.51 = 38.71; scorecard rows 23.10/9.10/6.51 match; Year-to-date toggle shows $336.2M, -$3.07M (-0.9%), +15.1%, GP $139.08M / -$5.98M, complaints 450, channel YTD 200.88/83.25/52.03, all matching my recompute (336.16, 339.23, 291.96; GP 139.08 vs 145.06). B's rate/volume split (-$4.66M / -$1.31M) uses the aggregate-margin formula stated in its glossary rather than a per-channel split (-$4.29M / -$1.68M); both sum to the -$5.98M gap, so the totals reconcile. YTD is one click away rather than the default view."
+    },
+    {
+      "text": "The top of the dashboard surfaces what needs attention (exceptions or key insights), not only charts.",
+      "passed": true,
+      "evidence": "Page opens with a one-sentence headline ('net sales -1.3% vs budget and gross profit -$1.04M vs budget ... 2 of 4 targeted KPIs off track'), KPI cards with status badges, and then a 'Needs attention' panel directly beside a chart titled 'Gross profit has missed budget for 8 consecutive months'. Five to six ranked exceptions, each with a [TBD] owner/next step. Updates with filters."
+    },
+    {
+      "text": "Charts state units and periods; no 3D effects; bar charts start at zero; no misleading dual axes.",
+      "passed": true,
+      "evidence": "Units and period in every chart subtitle ('Variance vs budget by month, $M', 'Gross margin vs budget, percentage points - Sep 2026', 'Monthly, %, budget dotted - Jan-Sep 2026'). No 3D. No dual axes. All bar charts (monthly variance, channel variance, margin-gap bridge) are diverging bars from a zero baseline with a visible zero line; line charts are the only non-zero-baseline marks and are explicitly annotated 'Lines may start above zero; read values from the axis and end labels'."
+    },
+    {
+      "text": "Every filter or drill-down control present actually changes what is displayed.",
+      "passed": true,
+      "evidence": "Playwright: Month select (Jan gives headline 'All channels, Jan 2026: net sales +1.5%...'), Month/Year-to-date toggle, Channel select (Retail chains view recomputes headline, cards, attention list, charts, scorecard), six trend-metric tabs all change content, Reset returns to the exact baseline text (verified equal). Definitions details expands. No dead controls. Month-view edge cases handled sensibly (e.g. 'single channel, no mix effect')."
+    },
+    {
+      "text": "Data definitions/provenance (source, period covered, metric definitions) are visible somewhere in the dashboard.",
+      "passed": true,
+      "evidence": "Header line: 'Data: monthly_kpis.csv, closed months Jan 2026-Sep 2026, 3 channels, US$ millions. Extract date not stated in the source.' Collapsible 'Definitions, status rules and data notes' with a ten-entry glossary (net sales, GM %, GP and rate/volume split, OTIF, DSO incl. receivables-above-target estimate formula, inventory, complaints, roll-up rule, status legend, owners) plus data-quality notes (PY base falls 11.4%, OTIF takes only two values per channel, DSO rises exactly +0.9/month). Collapsed by default but visible in the page."
+    },
+    {
+      "text": "The run did not ask the user for the audience or communication style (both were given in the request).",
+      "passed": true,
+      "evidence": "Transcript is a single turn with no question to the user; final message lists points to confirm (tolerances, owners, PY series) as findings, not as a request for audience or style."
+    }
+  ],
+  "quality_score": 8,
+  "strengths": [
+    "Leads with a one-sentence verdict headline, status-badged KPI cards with sparklines, then ranked 'Needs attention' with an adjacent chart that makes the key point (gross profit missed budget 8 consecutive months, gap twice the sales shortfall); a rate-vs-mix margin bridge that sums exactly to the gap.",
+    "Strong integrity: every recomputed number matches the CSV; estimates are labelled, tolerance bands are marked 'proposed', owners/targets that do not exist are shown as [TBD] rather than invented, and a data-quality note flags the falling PY base, two-value OTIF and perfectly linear DSO/inventory.",
+    "Honest charts: all bars are diverging from a zero line, line charts carry an explicit non-zero-baseline note, units and periods are in every title/subtitle; filters (month, Month/YTD, channel, six trend tabs, Reset) all work and edge cases are handled.",
+    "Full definitions glossary and provenance line (source, months, units, extract date unknown)."
+  ],
+  "defects": [
+    "Defaults to the single-month (Sep) view, so the first numbers a director sees ($38.7M, -1.3%) are not the YTD picture; YTD requires a toggle.",
+    "Dense page: five or six [TBD: owner / next step] lines plus trend panels and a long text-heavy headline add attention load; inventory and complaints show 'No target' with no status colour, so their adverse trend is only in text.",
+    "Longer run (54 turns) and a longer final message, though the content is substantive."
+  ]
+}

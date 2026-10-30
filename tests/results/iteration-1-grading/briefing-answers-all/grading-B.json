@@ -1,0 +1,42 @@
+{
+  "expectations": [
+    {
+      "text": "Turn 1: the assistant asks a compact briefing in a single message (audience, style, objective, detail level; constraints only if unknown) with predefined numbered options or an equivalent choice widget and stated defaults; it does not ask for information already given (topic, data file).",
+      "passed": true,
+      "evidence": "Turn 1 is one compact message: 'Before I build the deck, I need four answers.' It states what is already clear (topic, deliverable, data file) and asks Audience (6 numbered options, default 3), Objective (4 options, default 1), Style (5 options, default 5) and Detail plus constraints (3 detail options, default 2; template/brand/slide limit/language default English/deadline). It ends with 'Reply with numbers, your own words, or defaults'. Nothing already given is re-asked."
+    },
+    {
+      "text": "Turn 1 asks no more than six questions.",
+      "passed": true,
+      "evidence": "Four numbered questions (audience, objective, style, detail), plus one open-ended optional constraints line inside question 4. That is at most about five question units, within the limit of six."
+    },
+    {
+      "text": "Turn 2: the assistant asks no further questions (or one critical question at most), confirms the configuration briefly, and proceeds.",
+      "passed": true,
+      "evidence": "Turn 2 opens with a one-line confirmation: 'Audience: C-suite | Style: Financial & performance | Objective: Approval | Detail: Executive standard | Max 10 slides, English, .pptx'. It asks no questions and builds straight away. The final message contains no question."
+    },
+    {
+      "text": "A .pptx of at most 10 slides in English is produced, aimed at the C-suite with a financial/performance emphasis, and explicitly requests approval/decision.",
+      "passed": true,
+      "evidence": "pricing_2027_strategy.pptx has exactly 10 slides (9 main plus 1 appendix), in English. Slide 1: '2027 consumer health pricing plan: approval requested'. Slide 2: 'Approve the 2027 plan... subject to Finance confirming gross profit' with 'Decision requested'. Slide 9: 'Decision today: approve the plan...' with an action table. The content is financial: revenue bridge, option comparison, gross-profit sensitivity, risk table. It asks approval of the plan as proposed, which matches the user's objective."
+    },
+    {
+      "text": "Numbers in the deck come from pricing_2027.xlsx; any derived figure (e.g. revenue impact from price x volume x elasticity) is labeled as an estimate with its assumptions.",
+      "passed": true,
+      "evidence": "I recomputed everything from the workbook and the figures check out (+$2.24M, +$7.97M price effect, -$5.73M volume effect, -474k units, 29.5% GP breakeven, -$0.28M/+$4.76M elasticity range, BRE-V48 -$0.24M). Each slide has a source line marking derived figures '(calculated)' and stating the assumptions: 'Revenue = 2026 list price x 2026 units, repriced with model elasticities', 'Illustrative COGS shares, not company data', 'Competitor reaction not modeled', 'list-price basis, before trade spend'. The missing Somnis private-label gap and the owners/dates are marked [TBD], not invented. Minor: the word 'estimate' is rarely used, 'calculated' and 'illustrative' are used instead."
+    }
+  ],
+  "quality_score": 7,
+  "strengths": [
+    "Followed the intended flow: a compact, defaulted four-question briefing, a one-line confirmation, then a single 10-slide deck with no rebuilds and no stray deliverables.",
+    "Stronger financial reasoning for a CFO audience. A five-option comparison (no change, flat 3%, flat 5%, capped plan, proposed plan) and a gross-profit sensitivity at 30/40/50% COGS shares, explicitly labeled illustrative, show that the plan beats the alternatives but that GP only holds if COGS is at most 29.5% of revenue.",
+    "Honest labeling and sourcing: every slide has a source line with '(calculated)' and its assumptions, nothing is invented (missing data and owners/dates are [TBD]), and all numbers verified on recomputation. Speaker notes are included.",
+    "Ask matches the user's stated objective (approve the plan as proposed) with an explicit condition and a decision/next-steps slide. Risks are quantified (elasticity +/-0.3 range, REL-100 delay at most $0.09M)."
+  ],
+  "defects": [
+    "Visually plain: white slides, default-style tables and charts, a text-only title slide. Slide 2 is text-heavy with empty space, and there is no brand or color system. It looks less finished than a C-suite deck should.",
+    "About 14 magenta [TBD] placeholders (presenter, dates, owners) are visible on slides 1, 2, 5, 7, 8 and 9, so the deck is not present-ready. They are honest but add clutter.",
+    "'Best of five options' is selective. B's own model found that holding BRE-V48 gives a higher revenue (+$2.48M), but that option is left out of the comparison and the choice to keep the loss-making BRE-V48 increase is explained only in notes and chat.",
+    "Two different thresholds (29.5% for 'GP holds', about 39% for 'return if above') plus assumed uniform COGS shares muddle the conditional ask. At any plausible COGS share the stated condition fails, which weakens the approval case."
+  ]
+}

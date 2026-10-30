@@ -98,6 +98,15 @@ research/                  research dossiers (Layer 1), validation reports (Laye
 3. **Baseline (RED).** The 14 test cases ran without the skill on Opus, and 7 on Haiku. That recorded where the bare model actually fails (`tests/results/baseline-observations.md`), so the skill targets real failure modes instead of re-teaching what the model already does well.
 4. **Implementation and testing.** Opus wrote the core and orchestrated domain writers. All files were reviewed, contrast ratios recomputed and scripts tested (unit tests in `tests/scripts/`). The skill was tested headlessly with real skill discovery and blind A/B grading against the baselines; see `tests/results/`.
 
+## Test results
+
+Iteration 1, blind A/B on Opus with independent Sonnet graders (details in `tests/results/iteration-1.md`):
+
+- 11 of 14 cases graded. Assertions passed: 66/67 with the skill, 55/67 without. Graders preferred the skill in 7 cases, tied 2 and preferred the baseline in 2.
+- The largest gains were on integrity: no invented figures in a CFO business case, no invented RAG thresholds, correct source attribution, and one briefing instead of a double build.
+- Losses: a rebuilt deck cluttered with `[TBD]` markers, and two quick tasks where the skill didn't trigger. The fixes are in the current files but have **not been re-run** (iteration 2 is pending).
+- Cost: higher on most standard tasks (for example $0.97 vs $0.36 for the CFO memo), lower where the briefing avoided a rebuild.
+
 ## Running the tests
 
 ```

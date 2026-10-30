@@ -1,0 +1,51 @@
+{
+  "expectations": [
+    {
+      "text": "An English .pptx file was produced (separate from the original) with the same number of slides as the source (6).",
+      "passed": true,
+      "evidence": "B/work/commercial_results_Q3-26_EN.pptx exists beside the untouched original; render.py produced 6 pages / 6 PNGs; doc_text shows slides 1-6 with same structure (table, chart, notes)."
+    },
+    {
+      "text": "Every number in the source survives with the same value, converted to English conventions (e.g. 'R$ 48,7 mi' -> R$48.7M or BRL 48.7 million; '41,2%' -> 41.2%; '-1,8 p.p.' -> -1.8 pp or percentage points; '15/11/2026' -> 15 Nov 2026 or November 15, 2026); none are dropped, altered or added.",
+      "passed": true,
+      "evidence": "numbers_check compare: 'all 61 source numbers are in the target (61 identical, 0 within rounding); no extra numbers'. Checked text: 'BRL 48.7M', '-1.8 pp', '41.2%', 'Nov 15, 2026', 'August 2026', 'March 2027', table values and chart workbook values unchanged."
+    },
+    {
+      "text": "Business terms are translated by meaning and used consistently: orçado -> budget, realizado -> actual, meta -> target, ruptura -> out-of-stock, verba promocional -> promotional/trade spend, ticket médio -> average ticket/order value, positivação -> active-outlet coverage / numeric distribution (or an equivalent explained term).",
+      "passed": true,
+      "evidence": "Actual (BRL M), Budget (BRL M), 'below budget', 'target: 75.0%', 'Average out-of-stock rate of 8.6%', 'Promotional spend rose to 9.8%', 'Average ticket at independent pharmacies', 'Active POS rate' used consistently on slide 2, slide 4 title, chart legend and notes, with POS spelled out on slide 2 and positivação defined in the slide 4 notes ('% of POS in the customer portfolio with at least one purchase'). Fully English on-slide text."
+    },
+    {
+      "text": "The footnote caveat that IQVIA sell-out data runs only through August and September is estimated is preserved in the translated deck.",
+      "passed": true,
+      "evidence": "Slide 5 footnote: '*IQVIA sell-out data available through August 2026; September estimated by the Market Intelligence team.' Rendered legibly at bottom of slide 5."
+    },
+    {
+      "text": "The run notices and flags to the user that the headline says 2.1% below budget while the table total implies -2.0% (or flags another genuine ambiguity in the source) instead of silently changing a figure.",
+      "passed": true,
+      "evidence": "Final message: 'The budget gap doesn't match between slides. Slide 2 says revenue was \"2.1% below budget\", but the slide 3 table shows -2.0%. 48.7 vs. 49.7 works out to -2.0%, so slide 2 looks like the typo.' Left unchanged in deck. Also flagged IQVIA asterisk on slide 2 vs footnote on slide 5."
+    },
+    {
+      "text": "Speaker notes are translated too (or the response states explicitly how notes were handled).",
+      "passed": true,
+      "evidence": "Notes on slides 1 and 4 translated ('Open by thanking the global board...', 'Active POS rate (\"positivação\") = % of POS in the customer portfolio...'); final message says 'plus the speaker notes on slides 1 and 4'."
+    },
+    {
+      "text": "Before translating, the run did not send the user a multi-question briefing questionnaire (at most one targeted question).",
+      "passed": true,
+      "evidence": "No question of any kind before or after translating; went straight to delivery and only offered to fix the two flagged issues ('I can fix either one if you want')."
+    }
+  ],
+  "quality_score": 8,
+  "strengths": [
+    "Fully English on-slide wording with the local jargon resolved: 'Active POS rate' used consistently (slide 2, slide 4 title, chart legend), POS spelled out once, positivação defined in the slide 4 notes.",
+    "Flagged both genuine source problems (2.1% vs -2.0%, and the misplaced IQVIA footnote) and said which figure is probably the typo, without changing the deck; no extra question, just an offer to fix.",
+    "All 61 numbers preserved (numbers_check OK); chart, embedded workbook, table, notes and footnote translated; original layout intact and nothing overflows in render.",
+    "Concise hand-off: states what was translated, the BRL convention choice (easy to revert), and the term decisions, in a short scannable message."
+  ],
+  "defects": [
+    "Small style inconsistencies: table header and chart legend use 'Q3 '25' / 'Q3 '26' while body text uses 'Q3 2025'; 'Brazil Commercial Leadership' is a loose rendering of 'Diretoria Comercial'.",
+    "'BRL 48.7M' / 'BRL M' replaces the source's 'R$' convention; defensible for a global audience but not strictly the source's currency notation (and offered as reversible).",
+    "Less verification evidence reported (no numbers diff or validator run); relied on a visual grid check, though the output is in fact correct."
+  ]
+}

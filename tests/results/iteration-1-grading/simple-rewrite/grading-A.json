@@ -1,0 +1,35 @@
+{
+  "expectations": [
+    {
+      "text": "The rewritten email is about 60 words or fewer and keeps every fact: 8 of 10 categories done, the remaining 2 by next Friday, dependent on finance data arriving on time, and the request to help expedite the finance data.",
+      "passed": true,
+      "evidence": "Email is ~44 words (incl. greeting/sign-off). Keeps all facts: '8 of 10 categories are done', 'finish the last 2 by next Friday if we get the data we need from Finance on time', and 'Could you help speed up that data request with Finance?'. Nothing added or dropped."
+    },
+    {
+      "text": "The request to Mark is explicit and appears in the first two sentences.",
+      "passed": false,
+      "evidence": "The ask is the third sentence, in its own last paragraph. Sentence 1 is 'Quick update on Q4 pricing: 8 of 10 categories are done.', sentence 2 is the Friday/Finance dependency, and sentence 3 is 'Could you help speed up that data request with Finance?'. A's own note says 'the status is now the first thing Mark reads', so it deliberately put status first, not the ask."
+    },
+    {
+      "text": "The run spawned no subagents, did no web search, and asked no clarifying questions.",
+      "passed": true,
+      "evidence": "Transcript shows a single turn (num_turns 1) with no tool calls, no search, no delegation, and no question to the user. The only question is the ask to Mark inside the email."
+    },
+    {
+      "text": "Apart from the rewrite, the response has at most one or two short lines of commentary.",
+      "passed": true,
+      "evidence": "After the rewrite there is one short paragraph of three brief sentences (~36 words): 'This version goes from about 115 words to about 45. The filler phrases are gone... The request has its own line...'. At the upper edge of 'one or two short lines', but compact. The word figures are roughly right (original is 119, email is 44)."
+    }
+  ],
+  "quality_score": 7,
+  "strengths": [
+    "Faithful, tight rewrite: ~44 words (from 119) with every fact and the dependency on Finance preserved and no invented claims.",
+    "Minimal commentary (~36 words), so it respects the user's time. No questions, tools or extra turns.",
+    "Ask is a clear standalone line with the sign-off in place, ready to paste."
+  ],
+  "defects": [
+    "The ask comes last (3rd sentence), so a VP reads status before learning what is needed. The structure was kept, not improved.",
+    "No subject line.",
+    "Commentary is three sentences, a little more than the 'one or two short lines' target, and partly self-congratulatory ('hard to miss')."
+  ]
+}

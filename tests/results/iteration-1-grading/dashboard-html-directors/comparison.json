@@ -1,0 +1,10 @@
+{
+  "winner": "B",
+  "margin": "clear",
+  "reasons": [
+    "Run A passes 8/9 and Run B 9/9; the one hard assertion difference is chart honesty: Run A's gross-profit bridge truncates its total bars at $136M (a 4% gap looks like a ~65% drop), while all of Run B's bar charts are zero-based and its line charts are annotated.",
+    "Run B's insight is sharper and better evidenced: gross profit missed budget 8 consecutive months, rate-vs-mix decomposition that sums exactly, and an explicit data-quality note that the PY base falls 11.4% and DSO/inventory move in perfectly linear steps; Run A flags the PY base but has no such checks.",
+    "Run B has the fuller provenance (glossary of ten metric definitions, proposed-tolerance labelling, [TBD] markers instead of invented owners/targets); Run A's definitions are a footer paragraph and its scorecard clips the Complaints column at desktop width.",
+    "Offsetting points for Run A: it defaults to the YTD view, is more compact, and used fewer turns; B's single-month default and [TBD] repetition cost it some attention value but not enough to reverse the result."
+  ]
+}

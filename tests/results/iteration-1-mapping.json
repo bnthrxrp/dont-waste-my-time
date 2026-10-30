@@ -1,0 +1,58 @@
+{
+  "board-deck-no-data": {
+    "A": "with",
+    "B": "without"
+  },
+  "briefing-answers-all": {
+    "A": "without",
+    "B": "with"
+  },
+  "cfo-business-case-memo": {
+    "A": "with",
+    "B": "without"
+  },
+  "dashboard-html-directors": {
+    "A": "without",
+    "B": "with"
+  },
+  "dense-report-to-narrative": {
+    "A": "with",
+    "B": "without"
+  },
+  "director-dashboard-spec": {
+    "A": "without",
+    "B": "with"
+  },
+  "improve-weak-deck": {
+    "A": "with",
+    "B": "without"
+  },
+  "incomplete-data-summary": {
+    "A": "without",
+    "B": "with"
+  },
+  "quick-translation": {
+    "A": "with",
+    "B": "without"
+  },
+  "simple-rewrite": {
+    "A": "without",
+    "B": "with"
+  },
+  "translate-pt-board-deck": {
+    "A": "with",
+    "B": "without"
+  },
+  "research-strategic-question": {
+    "A": "without",
+    "B": "with"
+  },
+  "briefing-audience-only": {
+    "A": "with",
+    "B": "without"
+  },
+  "briefing-use-defaults": {
+    "A": "without",
+    "B": "with"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "expectations": [
+    {
+      "text": "The run does not ask who the audience is or what the objective is (CFO approval was stated).",
+      "passed": true,
+      "evidence": "Transcript A shows no question to the user at any point; it read guidance, built the docx and delivered. Final message only offers to complete figures if the user sends Appendix A data."
+    },
+    {
+      "text": "No cost, revenue or productivity figure is presented as fact without a source; missing numbers are requested in at most one targeted question or shown as clearly marked placeholders/assumptions.",
+      "passed": true,
+      "evidence": "A/work/KAM_Business_Case_Memo.docx: every cost, sales, margin, growth, payback and threshold figure is a yellow-highlighted [TBD...] placeholder, often with an owner (e.g. 'Loaded cost is [TBD: $ per KAM per year, owner: HR/Finance]'). Table 1 is all [TBD]. Only non-placeholder numbers are '3' KAMs, '3.0' FTE, '0' cost for do-nothing and the month-9 review. The one factual claim about current coverage ('served only through [TBD: confirm - wholesalers / field reps]') is flagged to confirm in both the memo and the chat. Appendix A lists the inputs and owners. No question asked."
+    },
+    {
+      "text": "The memo leads with the decision requested and the rationale, and covers cost, expected benefit, payback/break-even logic, risks, alternatives and how success will be measured.",
+      "passed": true,
+      "evidence": "Opens with 'The ask: 3 KAM hires at [TBD] ... paying back in [TBD] months' and 'Recommendation: approve all three, with a go/no-go review at month 9'. Then covers: problem/rationale (s1-2), cost and break-even formula (loaded cost / gross margin net of trade spend, Table 1 with cumulative net contribution), sensitivity at half base case, alternatives table (do nothing, phased 1+2, move existing KAMs, broker/inside sales), three risks with mitigations, month-9 review metric with stop/scale thresholds and leading indicators, and an explicit decision request. Benefit and payback numbers are placeholders but the logic is shown."
+    },
+    {
+      "text": "The memo body is concise (about one page, roughly 500 words or fewer excluding placeholders tables).",
+      "passed": true,
+      "evidence": "Borderline. Body paragraphs before Appendix A (excluding tables) count 622 words including [TBD] tokens, 533 excluding them; header lines, three tables and the appendix are extra. Renders show body on about 1.5 pages (page 1 full, page 2 about half) plus a one-page appendix. Roughly at the 500-word target once placeholders are discounted."
+    }
+  ],
+  "quality_score": 7,
+  "strengths": [
+    "No fabrication: every figure is a visibly highlighted [TBD] with an owner, plus an Appendix A input checklist, so nothing invented can reach the CFO.",
+    "Decision-first structure: the ask, recommendation and break-even logic (loaded cost / gross margin net of trade spend) are on page 1, with alternatives, risks with mitigations and a month-9 stop/scale gate.",
+    "Shows analytical judgement: Section 2 notes that covered chains were chosen for being larger, so the growth gap overstates the KAM effect and a FP&A-agreed haircut is applied; offers phased hiring as an honest fallback.",
+    "Delivered as a clean, rendered Word memo with visual QA (fixed table widths and a long opening sentence); no questions asked; the chat summary states what to fill in first."
+  ],
+  "defects": [
+    "With every number a TBD, the memo is a structured template rather than a case; the CFO-facing ask has no dollar figure until the user fills about 40 blanks.",
+    "Body runs about 1.5 pages and about 620 words with tokens, above the one-page target; the placeholder density hurts readability.",
+    "Final chat message is long (about 330 words) for a draft whose main message is 'fill in the TBDs'; it also offers an unrequested web-page version."
+  ]
+}

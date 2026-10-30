@@ -1,0 +1,57 @@
+{
+  "expectations": [
+    {
+      "text": "The spec starts from the decisions or management questions the Commercial Director must answer, before listing KPIs.",
+      "passed": true,
+      "evidence": "dashboard_spec.md section 1 'Purpose' opens (before the KPI dictionary in section 4) with four ordered questions: 'Are we going to hit the month?', 'If not, where is the gap?', 'Is it an execution problem?', 'Is it costing us more than it should?', and says anything that does not answer one of them is out of scope for v1."
+    },
+    {
+      "text": "Each headline KPI has a definition, formula or source field, refresh/latency, a target or threshold (or an explicit 'to be confirmed'), and polarity (which direction is good).",
+      "passed": false,
+      "evidence": "KPI tables in 4.1-4.4 give Definition, Target/threshold and RAG rule, and source is given by section heading. But there is no polarity statement anywhere (never says 'higher/lower is better'; direction is only implied inside RAG strings like 'Green >= 100%' or 'Green <= 5%'), and call-plan compliance, units and others are 'Display only' with no direction at all. Latency is not per KPI; it sits in a separate source table (section 2). Landing-page headline KPI 'Call plan compliance' has no target or polarity (target is open question Q5)."
+    },
+    {
+      "text": "It addresses the data latency/grain mismatches and quality caveats in the source (IQVIA sell-out monthly with ~4-week lag versus a weekly dashboard; retail-audit sample skew; CRM outlet duplicates) and says how the dashboard shows them.",
+      "passed": true,
+      "evidence": "Section 2 splits sources by freshness with a 'data through' label on every visual; IQVIA is 'Month M-2 for most of the month', monthly page only, which 'ignores the week slicer' (Page 4); Finance likewise. Audit sample: 'Audit panel OOS, never national OOS', cells with <30 stores greyed out. Duplicates: calculate on the deduplicated golden outlet key, else a visible 'provisional - outlet master under cleanup' badge, plus duplicate-rate trend on Data Quality page 5."
+    },
+    {
+      "text": "It defines a visual hierarchy/layout (what sits at the top vs drill-down) and chart choices justified by the question each answers.",
+      "passed": true,
+      "evidence": "Section 5 gives a Page 1 ASCII wireframe (6 KPI cards, cumulative line, diverging bar gap by channel, Top 10 exceptions table, one screen at 16:9), then pages 2-5 as drill-downs with named chart types (matrix, heat table, weekly bars with LY markers, bullet chart, 12-month ratio with 0.9-1.1 band). The link between chart and question is mostly implicit (page purposes map to the four section-1 questions); the exceptions table is justified as 'the highest-value element'. Adequate but thin on explicit per-chart justification."
+    },
+    {
+      "text": "RAG/status colors are defined by business thresholds and metric polarity, not merely by up/down movement.",
+      "passed": true,
+      "evidence": "RAG is driven by thresholds against targets with direction respected: Net sales Green >=100% / Amber 95-99.9% / Red <95% of phased target; OOS Green <=5% (lower better); trade spend Green <=8.0 / Amber to 8.5 / Red >8.5% (cap); coverage compared with a pacing curve rather than the raw 75%; display-only where no target. Not movement-based. (Several band values are invented - see the invented-targets assertion.)"
+    },
+    {
+      "text": "It specifies interactions (filters, drill-downs) and non-happy-path states (stale data, missing data, loading/empty/error) or explicitly scopes them out.",
+      "passed": false,
+      "evidence": "Interactions are covered (synced slicers on pages 1-3, drill-through from Top 10 exceptions to Page 2, Page 4 ignores week slicer). Non-happy-path coverage is partial: stale data is flagged on Page 5 with per-source age limits, trade spend returns BLANK if month unclosed, small-sample cells greyed, coverage 'provisional' badge. There is no empty-selection, error or loading state and no statement scoping them out; the only related item is 'Page 1 loads in < 5 s' as an acceptance criterion. No dedicated states section."
+    },
+    {
+      "text": "The top level is limited to a focused set of headline KPIs (roughly 9 or fewer) rather than every available metric.",
+      "passed": true,
+      "evidence": "Page 1 has 6 KPI cards (Net sales MTD, Month landing, Coverage, Call plan compliance, OOS audit panel, Trade spend %), well under 9; the rest sits on drill pages 2-5."
+    },
+    {
+      "text": "It does not invent targets absent from the data description; the OOS threshold is labeled informal (5%) or to-be-confirmed.",
+      "passed": false,
+      "evidence": "OOS 5% is correctly called 'reference (informal - label it reference, not target)', and call-plan compliance is held at 'Display only until target agreed'. But the spec then invents unlabeled thresholds as if they were business rules: OOS 'Amber 5-8% / Red > 8%' (an OOS status scale for a metric with no formal target; 8% appears nowhere in the data), net sales 'Amber 95-99.9% / Red <95%', trade spend 'Green <= 8.0%', coverage 'Amber within 3 pp', required run-rate '>1.3x', gross-to-net '+1 pp', CM 'Amber -2%', sell-in/out '0.9-1.1', market share '-0.5 pp', price index '+/-5 pts', sample 'n >= 30', stale limits (2/14/21/60/45 days). None is marked proposed or TBC; numbers_check shows 47 untraced numbers. Material unflagged invention."
+    }
+  ],
+  "quality_score": 6.5,
+  "strengths": [
+    "Strong opening framing (four ordered director questions, Monday review) and a clear, compact 5-page structure with a realistic one-screen wireframe and a high-value Top-10 exceptions table.",
+    "Good handling of the weekly-vs-monthly mismatch: a source-freshness table, MTD-first design, IQVIA/Finance isolated on a monthly page that ignores the week slicer, as-of labels on every visual, and the back-loaded-month phasing insight.",
+    "Sound handling of data-quality caveats (golden outlet key or 'provisional' badge, 'Audit panel OOS' label with n>=30 grey-out, possible double count of SAP discounts in BPC trade spend) and concrete DAX/data-model notes with 9 owner-assigned open questions.",
+    "Compact (about 17 KB) and quick for the BI team to digest."
+  ],
+  "defects": [
+    "Invents many unlabeled thresholds and presents them as rules: an OOS Amber 5-8% / Red >8% status scale for a metric with no formal target, net sales Amber 95-99.9% / Red <95%, trade spend Green <=8.0%, coverage 3 pp, CM -2%, ratio 0.9-1.1, price +/-5 pts, etc. None is marked proposed or TBC, so BI would build them as business-approved logic.",
+    "KPI definitions lack explicit polarity and per-KPI refresh/latency (latency lives in a separate table; direction only implied in RAG strings); call-plan compliance is a landing-page headline card with no target or direction.",
+    "No dedicated non-happy-path states: no empty-selection, error or loading behavior and no scoping-out; only stale flags on Page 5, BLANK for unclosed months, and greyed small-sample cells.",
+    "Chart-to-question justification is mostly implicit; process note: the final chat message is long and re-narrates the spec."
+  ]
+}

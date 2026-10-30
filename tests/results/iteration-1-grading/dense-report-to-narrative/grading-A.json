@@ -1,0 +1,56 @@
+{
+ "expectations": [
+  {
+   "text": "executive_narrative.md exists and its main body is at most about 600 words (readable in roughly 3 minutes).",
+   "passed": true,
+   "evidence": "File exists in A/work/. wc -w = 639 whole file; 633 excluding the H1; about 563 excluding all headings and about 544 excluding headings, source footer and meta line. Within 'about 600' for a body of this shape; the whole file is slightly over."
+  },
+  {
+   "text": "The first paragraph states the central conclusion (e.g. growth is price-driven / full-year forecast at risk) rather than background or an introduction.",
+   "passed": true,
+   "evidence": "Opens with a bold 'Bottom line.' paragraph: net sales +4.0% vs PY but $5.4M (-1.3%) below budget, 'The growth came from price, while volume fell and shipments ran ahead of consumer demand', and 'the $548M full-year forecast excludes that cut'. It also gives a revised full-year number. The H2 headline says the same: 'Our +4.0% growth is price and inventory, not consumers, and the $548M forecast does not yet reflect that'."
+  },
+  {
+   "text": "It states that the +4.0% year-over-year growth is price-driven (price +6.8%) while volume declined (-3.1%).",
+   "passed": true,
+   "evidence": "Section 1 'Price did all of the growth; consumers bought less': 'Price added +6.8% and volume fell -3.1% (mix +0.5%), against a budget of price +4.5% and volume +1.5%'. The Bottom line also attributes the +4.0% to price."
+  },
+  {
+   "text": "It identifies the sell-in (+4.0%) vs sell-out (+0.7%) gap and trade inventory of 6.8 weeks against the agreed 4-6 week range as a risk to Q4 / the full-year forecast.",
+   "passed": true,
+   "evidence": "Section 2: 'sell-in grew +4.0%; ... sell-out grew only +0.7%', 'top 20 customers now hold 6.8 weeks of supply, up from 5.2 in December and above the agreed 4-6 week range'. It ties this to the forecast with 'Forecast exposure (calculated): returning to 6 weeks removes about $6.3M of Q4 shipments; ... 5 weeks ... $14.2M'."
+  },
+  {
+   "text": "Any figure not stated in the source (e.g. ~$12.6M exposure = 1.6 extra weeks x $7.9M/week, or a revised full-year number) is labeled as an estimate or calculation and its basis is shown; no number contradicts the source.",
+   "passed": true,
+   "evidence": "Derived figures are labeled with their basis. '$12.6M (1.6 weeks x $7.9M average weekly Q3 sell-out)' matches the grader's example. '$6.3M / $14.2M' are tagged '(calculated)', and I checked them: 0.8 x 7.9 = 6.32 and 1.8 x 7.9 = 14.22. '$534-542M, 96-97% of the $556M budget' is tagged '(estimate, basis below)'; 548 - 14.2 = 533.8 and 548 - 6.3 = 541.7. The '$1.3M' delisting share is tagged '(estimate)'; 3.1 x 5/12 = 1.29. The retail-value and top-20-only caveat is stated, and the 'distribution not product' reading is tagged '(interpretation)'. Minor gap: '-$11.7M' for Digestia is derived (84.7 / 0.879 - 84.7 = 11.66) and not tagged, though it sits next to -12.1%. No number contradicts the source. Two soft over-reads: 'This is also why the Midwest is 4.2% below budget' (the source lists weather and competition too) and 'Part of this spend likely funded the inventory build'. The 'larger than the whole company miss' comparison for Somnis assumes the $16.0M target is YTD, and only the chat flags that assumption."
+  },
+  {
+   "text": "It flags the deterioration in trade promotion effectiveness (average ROI 0.82 vs 1.07, 3 of 11 national promotions below 1.0, and/or trade spend +18%).",
+   "passed": true,
+   "evidence": "Section 3: 'Trade spend rose 18% to $58.4M YTD. Of 11 national promotions, 3 returned less than they cost (ROI below 1.0). They include the two largest: Brevex BOGO (ROI 0.61) and Relivia 30% off (0.74)'. It deliberately omits the 0.82 vs 1.07 average because the run judged it internally inconsistent; the assertion accepts '3 of 11' and/or '+18%'."
+  },
+  {
+   "text": "It ends with specific actions or decisions (e.g. reset Q4 sell-in / forecast, stop or redesign negative-ROI promotions, Somnis recovery, OTIF fix), not generic statements like 'continue to monitor'.",
+   "passed": true,
+   "evidence": "Closes with 'Decisions requested on Monday': (1) re-base the full-year forecast for destocking and stop assuming Q3 run-rate shipments; (2) stop or redesign ROI<1.0 promotions for Q4 and set a 2027 ROI floor; (3) Somnis, fund a push toward 70% ACV or reset the target. A closing line adds a value-pack pricing response for Digestia and Brevex and confirmation that Columbus service is back above 95%. All are specific. Defect: owners and dates are left as '[TBD]' placeholders in the deliverable."
+  },
+  {
+   "text": "It contains no generic filler (e.g. 'in today's rapidly evolving landscape', 'holistic overview') and does not repeat the source's unsupported 'solid performance' framing as fact.",
+   "passed": true,
+   "evidence": "No filler phrases. The opening is the conclusion and the analysis is specific. It does not repeat the 'solid performance' framing: it says the growth is 'price and inventory, not consumers' and names Relivia and the Northeast and Southeast as the only bright spots."
+  }
+ ],
+ "quality_score": 8,
+ "strengths": [
+  "Answer-first: the first paragraph and headline state that growth is price plus channel inventory, and it gives a quantified revised full-year range ($534-542M, 96-97% of budget) with basis shown. This is the highest decision value of the two.",
+  "Strong number integrity: every derived figure ($12.6M, $6.3M/$14.2M, $1.3M, range) is tagged calculated or estimate with its basis. It also caught two source inconsistencies (14.1% of 'gross' sales equals trade spend over net sales; a 0.82 average ROI cannot be a simple average when the two largest of the 3 sub-1.0 promotions are 0.61 and 0.74) and omitted both rather than propagate them, and said so in the chat.",
+  "Adds insight beyond restating the report: the delisting explains only about $1.3M of Digestia's -$11.7M; the Somnis shortfall is larger than the whole budget miss; the Somnis diagnosis is labeled 'interpretation'.",
+  "Decisions are tight (3 plus 2 'also needed') and map to the central risks: re-base the forecast, stop or redesign negative-ROI promotions, Somnis."
+ ],
+ "defects": [
+  "Decision owners and dates are left as '[TBD]' placeholders in a document meant to be read on Monday; they have to be filled in before circulation.",
+  "A few soft over-reads: 'This is also why the Midwest is 4.2% below budget', 'Part of this spend likely funded the inventory build', and the Somnis 'larger than the whole company miss' comparison assumes the $16.0M target is YTD, which only the chat flags. The Digestia -$11.7M is derived and untagged.",
+  "Slightly dense: about 630 words in total, with two overlapping exposure numbers ($12.6M build vs $6.3-14.2M destock) that a director must reconcile. The chat reply is long, with five caveat bullets."
+ ]
+}

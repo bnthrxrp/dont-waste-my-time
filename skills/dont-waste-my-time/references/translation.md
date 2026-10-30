@@ -41,7 +41,7 @@ Read this for a full-file translation, a long multi-section text, or an adaptati
 ## Never
 
 - Change a number, claim, conclusion, hedge or emphasis. "Deve crescer" is "is expected to grow", not "will grow"; "recuou" is "declined", not "plunged".
-- Silently correct a source error. Translate what is there, choose the most defensible reading, and flag it with its location: "Slide 3 says margin fell 1.5 pp; the slide 6 table gives -1.3 pp. Kept both as in the source; please confirm."
+- Silently correct a source error. Translate what is there, choose the most defensible reading, and flag it with its location: "Slide 3 says margin fell 1.5 pp; the slide 6 table gives -1.3 pp. Kept both as in the source."
 - Drop, merge or move a caveat, footnote, source line or footnote marker. A marker attached to the wrong item stays where the source put it, and you flag it.
 - Put anything but the translation into the deliverable: no preface ("Here is the translation"), translator's notes, explanations or code fences. Notes go in the final message.
 - Translate proper names, brands, product names, code, formulas, cell references, file paths, URLs or tickers. Keep Brazilian legal forms, taxes, regulators and registries (Ltda., S.A., ICMS, PIS/COFINS, CVM, B3, CNPJ) and add a short English gloss on first use for non-Brazilian readers. Translate department names and job titles descriptively (Diretoria Financeira → Finance Division), or use the organization's official English form.
@@ -97,7 +97,7 @@ Basis: **std [X]** = the Portuguese term is supported by source [X] in Evidence 
 | giro de estoque | inventory turnover | Times per period, not days. | practice |
 | cobertura de estoque | inventory cover, days of inventory | Usually days or weeks of forecast sales. | practice |
 | ruptura | out-of-stock (OOS) rate, stockout | Keep the base: % of SKUs, stores or store-days. | practice |
-| positivação | active-outlet rate; numeric distribution | Brazilian term: share (or count) of outlets in the customer base that bought at least once in the period. No exact English equivalent: on first use write "active-outlet rate (positivação)" or follow the source's definition. Never "positivity". | practice |
+| positivação | active-outlet rate; numeric distribution | Brazilian term: share (or count) of outlets in the customer base that bought at least once in the period. No exact English equivalent: use the English term on the slide or page and put the Portuguese term and its definition in the speaker notes or a footnote (in prose documents, gloss it once in parentheses), or follow the source's definition. Never "positivity". | practice |
 | PDV (ponto de venda) | outlet, store, point of sale | "POS" can be read as the till; prefer "outlet" or "store". | practice |
 | ticket médio | average ticket, average order value | Average order value for B2B orders; average ticket or basket for retail. | practice |
 | mix; efeito mix | mix; mix effect | | practice |
